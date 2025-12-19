@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{c as r,o as c}from"./index-Svb1OpEq.js";const o={};function n(t,s){return c(),r("div",null,"Yunda express create order")}const d=e(o,[["render",n]]);export{d as default};
