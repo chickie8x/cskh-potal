@@ -74,6 +74,7 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Button, Select, Checkbox, Card } from 'primevue'
 import api from '@/api/axios'
+import { toast } from 'vue-sonner'
 
 const route = useRoute()
 const router = useRouter()
@@ -113,6 +114,7 @@ const onPrint = async () => {
     window.open(URL, '_blank')
   } catch (err) {
     console.log(err)
+    toast.error('Lấy code in mã đơn thất bại')
   } finally {
     loading.value = false
   }

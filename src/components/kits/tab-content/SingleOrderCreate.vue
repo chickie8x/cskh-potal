@@ -707,7 +707,8 @@ const onFormSubmit = async ($form) => {
     objData[f] = $form.values[f]
   })
   objData['PRODUCT_DETAIL'] = productDetail.value
-  console.log(objData)
+  const productName = productDetail.value.map((item) => item.PRODUCT_NAME).join(',')
+  objData['PRODUCT_NAME'] = productName
   try {
     const res = await api.post('/connector/viettelpost/order/create-nlp', { data: objData })
     console.log(res.data)

@@ -58,12 +58,36 @@
 
     <Card v-if="excelData.length" class="mt-4">
       <template #title>
-        <div class="flex items-center gap-1">
-          <i class="pi pi-list size-5 mt-1" />
-          <span class="font-semibold text-color text-sm">Danh sách đơn hàng</span>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1">
+            <i class="pi pi-list size-5 mt-1" />
+            <span class="font-semibold text-color text-sm">Danh sách đơn hàng</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <Button
+              icon="pi pi-check"
+              variant="outlined"
+              severity="info"
+              label="Xác nhận"
+              size="small"
+              @click="fetchServices"
+            />
+            <Button
+              v-if="isVerified"
+              @click="batchOrderCreate"
+              icon="pi pi-file-plus"
+              size="small"
+              label="Tạo đơn"
+            />
+          </div>
         </div>
       </template>
       <template #content>
+        <div class="mb-2">
+          <span class="text-xs text-orange-600"
+            >Lưu ý(*): Các thay đổi ( trừ phần dịch vụ ) sẽ cần xác nhận lại các đơn hàng</span
+          >
+        </div>
         <DataTable
           :value="excelData"
           editMode="cell"
@@ -78,10 +102,28 @@
             alignFrozen="left"
             field="STT"
             header="STT"
-            style="min-width: 50px; background-color: #ecfdf5"
+            style="min-width: 50px"
+            class="frozen-column-emerald"
           >
             <template #body="slotProps">
               <div class="text-xs text-color">{{ slotProps.index }}</div>
+            </template>
+          </Column>
+          <Column
+            v-if="printShow"
+            frozen
+            alignFrozen="left"
+            header="In đơn"
+            style="min-width: 64px"
+            class="frozen-column-emerald"
+          >
+            <template #body="slotProps">
+              <Button
+                v-if="createdOrders[slotProps.index]"
+                icon="pi pi-print"
+                size="small"
+                @click="onPrintOrder(slotProps.index)"
+              />
             </template>
           </Column>
           <Column
@@ -89,36 +131,69 @@
             alignFrozen="left"
             field="Trạng thái"
             header="Trạng thái"
-            style="min-width: 100px; background-color: #ecfdf5"
+            style="min-width: 120px"
+            class="frozen-column-emerald"
           >
             <template #body="slotProps">
-              <div class="text-xs text-color">{{ slotProps.data['Trạng thái'] }}</div>
+              <div
+                v-if="isVerified"
+                class="text-xs text-color"
+                :class="[
+                  orderState[slotProps.index]?.status === 'success'
+                    ? 'text-primary-600'
+                    : 'text-red-600',
+                ]"
+              >
+                {{ orderState[slotProps.index].message }}
+              </div>
+              <div v-else class="text-xs text-color">Chưa xác nhận</div>
             </template>
           </Column>
           <Column
+            v-if="!printShow"
             frozen
             alignFrozen="left"
             field="Dịch vụ"
             header="Dịch vụ"
-            style="min-width: 150px; background-color: #ecfdf5"
+            style="min-width: 250px; font-size: 12px"
+            class="frozen-column-emerald"
           >
             <template #body="slotProps">
+              <span>{{
+                orderServices[slotProps.index]
+                  ? `${orderServices[slotProps.index]['MA_DV_CHINH']} - ${orderServices[slotProps.index]['TEN_DICHVU']}`
+                  : ''
+              }}</span>
+            </template>
+            <template #editor="{ data, field, index }">
               <Select
-                :options="slotProps.data['Dịch vụ']"
+                :options="orderServicesOptions[index]"
+                optionValue="MA_DV_CHINH"
+                optionLabel="TEN_DICHVU"
                 placeholder="Chọn dịch vụ"
                 size="small"
+                fluid
+                @update:modelValue="onServiceSelect(index, $event)"
               />
             </template>
           </Column>
           <Column
+            v-if="!printShow"
             frozen
             alignFrozen="left"
             field="Giá cước"
             header="Giá cước"
-            style="min-width: 100px; background-color: #ecfdf5"
+            style="min-width: 100px"
+            class="frozen-column-emerald"
           >
             <template #body="slotProps">
-              <div class="text-xs text-color">{{ slotProps.data['Giá cước'] }}</div>
+              <div class="text-xs text-color">
+                {{
+                  orderServices[slotProps.index]
+                    ? formatCurrency(orderServices[slotProps.index]['GIA_CUOC'])
+                    : ''
+                }}
+              </div>
             </template>
           </Column>
           <Column
@@ -142,13 +217,22 @@
               >
                 <InputNumber v-model="data[field]" size="small" />
               </template>
-              <template v-if="field === 'PAYMENT_OBJECT'">
+              <template v-else-if="field === 'PAYMENT_OBJECT'">
                 <Select
                   :options="paymentObjectOptions"
                   optionLabel="name"
                   optionValue="value"
                   v-model="data[field]"
                   size="small"
+                />
+              </template>
+              <template v-else-if="field === 'PRODUCT_TYPE'">
+                <Select
+                  size="small"
+                  :options="productTypeOptions"
+                  optionLabel="name"
+                  optionValue="value"
+                  v-model="data[field]"
                 />
               </template>
               <template v-else>
@@ -174,16 +258,27 @@ import {
   IconField,
   InputIcon,
   InputNumber,
+  Dialog,
 } from 'primevue'
 import * as XLSX from 'xlsx'
 import { useAuthStore } from '@/store/authstore'
 import { toast } from 'vue-sonner'
+import { chunkArray, formatCurrency } from '@/utils/helpers'
+import api from '@/api/axios'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const authStore = useAuthStore()
 const senderAddresses = ref(authStore.userAddress)
 const senderAddress = ref(senderAddresses.value[0])
 const senderName = ref(authStore.user?.name)
 const senderPhone = ref(authStore.user?.phone)
+const orderServicesOptions = ref([])
+const orderServices = ref([])
+const orderState = ref([])
+const isVerified = ref(false)
+const createdOrders = ref([])
+const printShow = ref(false)
 
 const fieldMapper = {
   'Tên người nhận (*)': 'RECEIVER_FULLNAME',
@@ -191,7 +286,10 @@ const fieldMapper = {
   'Địa chỉ nhận (*)': 'RECEIVER_ADDRESS',
   'Tên hàng hóa (*)': 'PRODUCT_NAME',
   'Số lượng': 'PRODUCT_QUANTITY',
-  'Trọng lượng (gram) (*)': 'PRODUCT_WEIGHT',
+  'Trọng lượng (gram)  (*)': 'PRODUCT_WEIGHT',
+  'Dài (cm)': 'PRODUCT_LENGTH',
+  'Rộng (cm)': 'PRODUCT_WIDTH',
+  'Cao (cm)': 'PRODUCT_HEIGHT',
   'Giá trị hàng (VND) (*)': 'PRODUCT_PRICE',
   'Tiền thu hộ COD (VND)': 'MONEY_COLLECTION',
   'Loại hàng hóa (*)': 'PRODUCT_TYPE',
@@ -218,19 +316,36 @@ const paymentObjectOptions = [
   { name: 'Người gửi trả', value: 'Người gửi trả' },
 ]
 
+const productTypeOptions = [
+  { name: 'Bưu kiện', value: 'Bưu kiện' },
+  { name: 'Tài liệu', value: 'Tài liệu' },
+]
+
 const checkFileTemplate = (arrayA, arrayB) => {
-  const normalize = (str) => str.replace(/\s+/g, ' ').trim();
-  
-  const setB = new Set(arrayB.map(normalize));
-  
-  return arrayA.every(element => setB.has(normalize(element)));
+  const normalize = (str) => str.replace(/\s+/g, ' ').trim()
+
+  const setB = new Set(arrayB.map(normalize))
+
+  return arrayA.every((element) => setB.has(normalize(element)))
 }
 
 const fileInput = ref(null)
 const file = ref(null)
 const fileName = ref('')
 const excelData = ref([])
+
+const resetState = () => {
+  file.value = null
+  fileName.value = ''
+  excelData.value = []
+  isVerified.value = false
+  orderServicesOptions.value = []
+  orderServices.value = []
+  orderState.value = []
+}
+
 const onFileChange = (event) => {
+  resetState()
   file.value = event.target.files[0]
   fileName.value = event.target.files[0].name
   const reader = new FileReader()
@@ -241,7 +356,6 @@ const onFileChange = (event) => {
     const worksheet = workbook.Sheets[sheetName]
     let rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' })
 
-    // Loại bỏ cột STT, MA DON HANG
     rows = rows.map((row) => {
       const newRow = { ...row }
       delete newRow.STT
@@ -249,7 +363,6 @@ const onFileChange = (event) => {
       return newRow
     })
 
-    // Loại bỏ các cột có tên chứa 'EMPTY'
     rows = rows.map((row) => {
       const cleanRow = {}
       for (const [key, value] of Object.entries(row)) {
@@ -260,15 +373,13 @@ const onFileChange = (event) => {
       return cleanRow
     })
 
-    // Lọc bỏ row trống (chỉ toàn giá trị rỗng sau khi bỏ STT)
     rows = rows.filter((row) =>
       Object.values(row).some((v) => v !== '' && v !== null && v !== undefined),
     )
 
     const arrA = Object.keys(fieldMapper)
     const arrB = Object.keys(rows[0])
-    console.log(arrA)
-    console.log(arrB)
+
     if (!checkFileTemplate(arrA, arrB)) {
       toast.error('File template không đúng')
       file.value = null
@@ -284,11 +395,163 @@ const onFileChange = (event) => {
       })
       return newItem
     })
+    orderServicesOptions.value = new Array(excelData.value.length).fill(null)
+    orderServices.value = new Array(excelData.value.length).fill(null)
+    orderState.value = new Array(excelData.value.length).fill(null)
+    createdOrders.value = new Array(excelData.value.length).fill(null)
   }
   reader.readAsArrayBuffer(file.value)
 }
 
 const onCellEditComplete = (event) => {
+  if (event.value === event.newValue) {
+    return
+  }
   excelData.value[event.index][event.field] = event.newValue
+  isVerified.value = false
+  orderServicesOptions.value = new Array(excelData.value.length).fill(null)
+  orderServices.value = new Array(excelData.value.length).fill(null)
+  orderState.value = new Array(excelData.value.length).fill(null)
+}
+
+const fetchServices = async () => {
+  orderServicesOptions.value = new Array(excelData.value.length).fill(null)
+  orderServices.value = new Array(excelData.value.length).fill(null)
+  orderState.value = new Array(excelData.value.length).fill(null)
+  const objData = excelData.value.map((item) => {
+    let obj = {}
+    obj['SENDER_ADDRESS'] = senderAddress.value.address
+    obj['RECEIVER_ADDRESS'] = item['RECEIVER_ADDRESS']
+    obj['PRODUCT_TYPE'] = item['PRODUCT_TYPE'] === 'Tai lieu' ? 'TH' : 'HH'
+    obj['PRODUCT_WEIGHT'] = item['PRODUCT_WEIGHT']
+    obj['PRODUCT_PRICE'] = item['PRODUCT_PRICE']
+    obj['MONEY_COLLECTION'] = item['MONEY_COLLECTION']
+    obj['PRODUCT_WIDTH'] = item['PRODUCT_WIDTH'] || null
+    obj['PRODUCT_HEIGHT'] = item['PRODUCT_HEIGHT'] || null
+    obj['PRODUCT_LENGTH'] = item['PRODUCT_LENGTH'] || null
+    obj['TYPE'] = 1
+    return obj
+  })
+  const chunkSize = 10
+  const batchs = chunkArray(objData, chunkSize)
+  for (let i = 0; i < batchs.length; i++) {
+    const batch = batchs[i]
+    const promises = batch.map((obj, index) => {
+      const idx = i * chunkSize + index
+      return api
+        .post('/connector/viettelpost/price-all-nlp', { data: obj })
+        .then((res) => ({ res, idx }))
+        .catch((err) => ({ err, idx }))
+    })
+
+    const result = await Promise.allSettled(promises)
+
+    result.map((response) => {
+      if (response.status === 'fulfilled' && !response.value.res?.data?.data?.error) {
+        orderServicesOptions.value[response.value.idx] = response.value.res.data.data.RESULT
+        orderServices.value[response.value.idx] = response.value.res.data.data.RESULT[0]
+        orderState.value[response.value.idx] = { status: 'success', message: 'Đơn hợp lệ' }
+      } else {
+        orderState.value[response.value.idx] = { status: 'error', message: 'Đơn không hợp lệ' }
+      }
+    })
+  }
+  isVerified.value = true
+}
+
+const onServiceSelect = (index, value) => {
+  orderServices.value[index] = orderServicesOptions.value[index].find(
+    (service) => service.MA_DV_CHINH === value,
+  )
+  console.log('Selected service:', orderServices.value[index])
+}
+
+const batchOrderCreate = async () => {
+  const orders = excelData.value.map((item, idx) => {
+    let { PAYMENT_OBJECT, ...obj } = item
+    obj['SENDER_FULLNAME'] = senderName.value
+    obj['SENDER_PHONE'] = senderPhone.value
+    obj['SENDER_ADDRESS'] = senderAddress.value.address
+    obj['PRODUCT_TYPE'] = item['PRODUCT_TYPE'] === 'Tài liệu' ? 'TH' : 'HH'
+    obj['ORDER_SERVICE'] = orderServices.value[idx]?.MA_DV_CHINH || null
+    obj['PRODUCT_DETAIL'] = []
+    if (item['MONEY_COLLECTION']) {
+      if (item['PAYMENT_OBJECT'] === 'Người nhận trả') {
+        obj['ORDER_PAYMENT'] = 2
+      } else {
+        obj['ORDER_PAYMENT'] = 3
+      }
+    } else {
+      if (item['PAYMENT_OBJECT'] === 'Người nhận trả') {
+        obj['ORDER_PAYMENT'] = 4
+      } else {
+        obj['ORDER_PAYMENT'] = 1
+      }
+    }
+    return obj
+  })
+
+  const chunkSize = 10
+  const batches = chunkArray(orders, chunkSize)
+  for (let i = 0; i < batches.length; i++) {
+    const batch = batches[i]
+    const promises = batch.map((order, idx) => {
+      const index = i * chunkSize + idx
+      return api
+        .post('/connector/viettelpost/order/create-nlp', { data: order })
+        .then((res) => ({ res, index }))
+        .catch((err) => ({ err, index }))
+    })
+
+    const result = await Promise.allSettled(promises)
+
+    result.forEach((response) => {
+      if (response.status === 'fulfilled') {
+        if (response.value.err) {
+          orderState.value[response.value.index] = { status: 'error', message: 'Tạo đơn thất bại' }
+        } else {
+          if (response.value.res.data?.success) {
+            orderState.value[response.value.index] = {
+              status: 'success',
+              message: 'Tạo đơn thành công',
+            }
+            createdOrders.value[response.value.index] = response.value.res.data.data
+          } else {
+            orderState.value[response.value.index] = {
+              status: 'error',
+              message: 'Tạo đơn thất bại',
+            }
+          }
+        }
+      } else {
+        orderState.value[response.value.index] = { status: 'error', message: 'Tạo đơn thất bại' }
+      }
+    })
+  }
+  printShow.value = true
+}
+
+const carrierMap = {
+  VIETTEL_POST: 'viettelpost',
+  YUNDA: 'yunda',
+}
+
+const onPrintOrder = (idx) => {
+  const order = createdOrders.value[idx]
+  const carrier = carrierMap[order.carrier]
+  const orderNumber = order.waybill
+  const path = `/print-order/${carrier}?ordercode=${orderNumber}`
+  const routeData = router.resolve(path)
+  window.open(routeData.href, '_blank')
 }
 </script>
+
+<style>
+.frozen-column-emerald {
+  background-color: #ecfdf5 !important;
+}
+
+.my-app-dark .frozen-column-emerald {
+  background-color: #064e3b !important;
+}
+</style>

@@ -81,31 +81,39 @@
           />
         </div>
         <div v-if="file" class="mt-4">
-          <span class="flex items-center gap-1 p-1"
+          <span class="flex items-center gap-1 p-1 text-sm"
             ><i class="pi pi-file text-primary"></i>{{ filename }}</span
           >
           <DataTable :value="addresses" responsiveLayout="scroll" showGridlines>
             <Column field="index" header="STT" style="text-align: center; padding: 1rem" />
-            <Column field="address" header="Địa chỉ" style="width: 50%; padding: 1rem" />
+            <Column field="address" header="Địa chỉ" style="width: 50%; padding: 1rem">
+              <template #body="slotProps">
+                <span class="text-sm">{{ slotProps.data.address }}</span>
+              </template>
+            </Column>
             <Column
               field="verifiedAddress"
               header="Địa chỉ đã xác minh"
               style="width: 50%; padding: 1rem"
             >
               <template #body="slotProps">
-                <i
-                  v-if="slotProps.data.verifiedAddress === 'Lỗi'"
-                  class="pi pi-times text-red-500 mr-2 mt-1"
-                  size="small"
-                ></i>
-                <i v-else class="pi pi-check-circle text-green-700 mr-2 mt-1" size="small"></i>
-                <span
-                  :class="[
-                    slotProps.data.verifiedAddress === 'Lỗi' ? 'text-red-500' : 'text-green-700',
-                  ]"
-                >
-                  {{ slotProps.data.verifiedAddress }}
-                </span>
+                <div v-if="slotProps.data.verifiedAddress.length">
+                  <i
+                    v-if="slotProps.data.verifiedAddress === 'Lỗi'"
+                    class="pi pi-times text-red-500 mr-2 mt-1"
+                    size="small"
+                  ></i>
+                  <i v-else class="pi pi-check-circle text-green-700 mr-2 mt-1" size="small"></i>
+                  <span
+                    class="text-sm text-color"
+                    :class="[
+                      slotProps.data.verifiedAddress === 'Lỗi' ? 'text-red-500' : 'text-green-700',
+                    ]"
+                  >
+                    {{ slotProps.data.verifiedAddress }}
+                  </span>
+                </div>
+                <div v-else></div>
               </template>
             </Column>
           </DataTable>
@@ -116,6 +124,7 @@
               label="Xác minh"
               icon="pi pi-check"
               :loading="loading"
+              size="small"
             />
           </div>
         </div>

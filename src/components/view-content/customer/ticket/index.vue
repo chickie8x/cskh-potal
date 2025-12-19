@@ -158,7 +158,7 @@
     </div>
 
     <!-- general info  -->
-    <div class="mt-4 flex items-center gap-8">
+    <!-- <div class="mt-4 flex items-center gap-8">
       <Card v-for="(info, index) in generalInfo" :key="index" class="w-full">
         <template #title>
           <span class="text-sm text-color">{{ info.label }}</span>
@@ -167,10 +167,10 @@
           <span class="text-xl font-semibold">{{ info.value }}</span>
         </template>
       </Card>
-    </div>
+    </div> -->
 
     <!-- search tickets  -->
-    <div class="mt-4 py-4 border-y border-surface">
+    <div class="py-4 border-y border-surface">
       <Form
         v-slot="$queryForm"
         @submit="onQuerySearch"

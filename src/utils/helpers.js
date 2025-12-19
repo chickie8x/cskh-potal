@@ -5,11 +5,14 @@ export const formatDateTime = (value) => {
   return format(value, 'dd/MM/yyyy HH:mm:ss')
 }
 
+export const formatDate = (value) => {
+  if (!value || (!value) instanceof Date) return ''
+  return format(value, 'dd/MM/yyyy')
+}
+
 export const formatCurrency = (num) => {
-  return num.toLocaleString('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  })
+  const value = Number(num)
+  return isNaN(value) ? '' : value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
 }
 
 export const formatNumber = (num) => {

@@ -44,6 +44,9 @@ import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const baseUrl = import.meta.env.VITE_API_BASE_URL
+const userId = authStore.user?.id
+const sseUrl = `${baseUrl}/sse/events/${userId}`
 
 // Language Select
 const language = ref('vn')
