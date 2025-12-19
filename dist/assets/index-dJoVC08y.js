@@ -1,1 +1,0 @@
-import{r as o,c,o as n}from"./index-Svb1OpEq.js";const l={__name:"index",setup(t){const e=o("Hello from Admin Ticket");return console.log(e.value),(r,s)=>(n(),c("div",null,"Admin Ticket"))}};export{l as default};

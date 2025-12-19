@@ -1,1 +1,0 @@
-import{r as n,c as o,o as t}from"./index-Svb1OpEq.js";const l={__name:"index",setup(r){const e=n("Hello from Admin Setting");return console.log(e.value),(s,a)=>(t(),o("div",null,"Admin Setting"))}};export{l as default};

@@ -241,7 +241,7 @@
             <div class="flex flex-col gap-4 text-sm text-color">
               <span class="text-primary font-bold">Thông tin hàng hóa</span>
               <div class="flex flex-col gap-2">
-                <div v-if="selectedOrder.rawData.PRODUCT_DETAIL.length">
+                <div v-if="selectedOrder.rawData.PRODUCT_DETAIL?.length">
                   <div
                     v-for="(prod, idx) in selectedOrder.rawData.PRODUCT_DETAIL"
                     :key="idx"
