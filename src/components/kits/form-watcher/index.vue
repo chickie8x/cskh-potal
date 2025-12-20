@@ -18,7 +18,7 @@ const requiredFields = [
   'RECEIVER_WARD',
   'RECEIVER_ADDR',
   'PRODUCT_TYPE',
-  'PRODUCT_PRICE',
+  // 'PRODUCT_PRICE',
   'PRODUCT_WEIGHT',
 ]
 

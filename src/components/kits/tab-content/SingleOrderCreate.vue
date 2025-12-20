@@ -14,11 +14,11 @@
       RECEIVER_ADDR: '',
       RECEIVER_ADDRESS: '',
       PRODUCT_TYPE: 'HH',
-      PRODUCT_PRICE: null,
-      PRODUCT_WEIGHT: null,
-      PRODUCT_LENGTH: null,
-      PRODUCT_WIDTH: null,
-      PRODUCT_HEIGHT: null,
+      PRODUCT_PRICE: 0,
+      PRODUCT_WEIGHT: 0,
+      PRODUCT_LENGTH: 1,
+      PRODUCT_WIDTH: 1,
+      PRODUCT_HEIGHT: 1,
       ORDER_PAYMENT: null,
       MONEY_COLLECTION: undefined,
       ORDER_SERVICE: null,
@@ -102,6 +102,7 @@
                   class="w-full"
                   size="small"
                   @change="fetchDistricts($form.RECEIVER_PROVINCE.value)"
+                  filter
                 />
                 <Select
                   name="RECEIVER_DISTRICT"
@@ -112,6 +113,7 @@
                   class="w-full"
                   size="small"
                   @change="fetchWards($form.RECEIVER_DISTRICT.value)"
+                  filter
                 />
                 <Select
                   name="RECEIVER_WARD"
@@ -121,6 +123,7 @@
                   placeholder="Xã/phường"
                   class="w-full"
                   size="small"
+                  filter
                 />
               </div>
               <FloatLabel variant="on">
@@ -360,7 +363,7 @@
               <label for="isCod" class="text-sm">Thu hộ bằng tiền hàng</label>
             </div>
             <InputNumber
-              :modelValue="isCod ? totalPrice : null"
+              :modelValue="isCod ? totalPrice : 0"
               id="codAmount"
               name="MONEY_COLLECTION"
               size="small"
@@ -650,7 +653,7 @@ watch(totalWeight, () => {
 })
 
 watch(isCod, () => {
-  formRef.value.setFieldValue('MONEY_COLLECTION', isCod.value ? totalPrice.value : null)
+  formRef.value.setFieldValue('MONEY_COLLECTION', isCod.value ? totalPrice.value : undefined)
 })
 
 watch(orderPayment, () => {
@@ -699,6 +702,7 @@ const orderFields = [
 
 const onFormSubmit = async ($form) => {
   if (!$form.valid) {
+    console.log($form.errors)
     toast.error('Thiếu hoặc sai thông tin')
     return
   }

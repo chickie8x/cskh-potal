@@ -63,27 +63,39 @@
         </Card>
       </div>
       <div v-if="verrifyMode === 'batch'">
-        <div class="flex items-center gap-4">
-          <input
-            ref="fileChooser"
-            type="file"
-            name="file"
-            id="fileChooser"
-            hidden
-            @change="onFileChange"
-          />
-          <Button
-            type="button"
-            label="Chọn file"
-            size="small"
-            icon="pi pi-upload"
-            @click="fileChooser.click()"
-          />
+        <div class="flex items-end gap-4 justify-between">
+          <div class="flex items-end">
+            <span class="flex items-center gap-1 text-sm"
+              ><i class="pi pi-file text-primary"></i>{{ filename }}</span
+            >
+          </div>
+          <div class="flex items-center gap-4 justify-end">
+            <input
+              ref="fileChooser"
+              type="file"
+              name="file"
+              id="fileChooser"
+              hidden
+              @change="onFileChange"
+            />
+            <Button
+              type="button"
+              label="Chọn file"
+              size="small"
+              icon="pi pi-upload"
+              @click="fileChooser.click()"
+            />
+            <Button
+              icon="pi pi-download"
+              label="File mẫu"
+              variant="outlined"
+              severity="info"
+              size="small"
+              @click="downloadTemplate"
+            />
+          </div>
         </div>
-        <div v-if="file" class="mt-4">
-          <span class="flex items-center gap-1 p-1 text-sm"
-            ><i class="pi pi-file text-primary"></i>{{ filename }}</span
-          >
+        <div v-if="file" class="mt-2">
           <DataTable :value="addresses" responsiveLayout="scroll" showGridlines>
             <Column field="index" header="STT" style="text-align: center; padding: 1rem" />
             <Column field="address" header="Địa chỉ" style="width: 50%; padding: 1rem">
@@ -234,6 +246,15 @@ const batchVerify = async () => {
     })
   }
   loading.value = false
+}
+
+const downloadTemplate = () => {
+  const link = document.createElement('a')
+  link.href = '/docs/addresses.xlsx'
+  link.download = 'addresses.xlsx'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 </script>
 

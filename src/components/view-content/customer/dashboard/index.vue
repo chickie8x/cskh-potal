@@ -68,17 +68,53 @@
     <div class="mt-4">
       <Card>
         <template #title>
-          <span class="text-color font-semibold">Danh sach don hang</span>
+          <div class="flex items-center justify-between">
+            <span class="text-color font-semibold text-sm">Danh sách đơn hàng</span>
+            <div class="flex items-center gap-8">
+              <div class="flex items-center gap-1">
+                <Checkbox v-model="showPostage" binary id="showPostage" size="small" />
+                <label for="showPostage" class="mt-1 text-sm font-medium">Hiển thị cước phí</label>
+              </div>
+              <Select
+                v-model="selectedSize"
+                :options="printSizes"
+                optionLabel="label"
+                optionValue="value"
+                checkmark
+                placeholder="Chọn kích cỡ in"
+                size="small"
+                class="w-40"
+                id="printSize"
+              />
+              <Select
+                v-model="selectedCarrier"
+                :options="carriers"
+                optionLabel="label"
+                optionValue="value"
+                checkmark
+                placeholder="Chọn đối tác"
+                size="small"
+                class="w-40"
+                id="carrier"
+              />
+              <Button
+                @click="onPrintAll"
+                label="In vận đơn"
+                variant="outlined"
+                icon="pi pi-print"
+                size="small"
+                :loading="printLoading"
+              />
+            </div>
+          </div>
         </template>
         <template #content>
           <div>
             <DataTable
-              v-model:selection="selectedOrder"
+              v-model:selection="selectedOrders"
               :value="orders"
               stripedRows
               showGridlines
-              selectionMode="single"
-              @rowSelect="onRowSelect"
               size="small"
               scrollable
               scrollHeight="flex"
@@ -88,11 +124,19 @@
               @page="onPageChange"
               :lazy="true"
             >
+              <Column
+                frozen
+                alignFrozen="left"
+                selectionMode="multiple"
+                headerStyle="width: 3rem"
+              ></Column>
               <Column frozen alignFrozen="left" header="Mã vận đơn" style="min-width: 150px">
                 <template #body="slotProps">
-                  <span class="text-sm font-semibold text-blue-500">{{
-                    slotProps.data.waybill
-                  }}</span>
+                  <span
+                    @click="onRowSelect(slotProps.data)"
+                    class="hover:underline cursor-pointer text-sm font-semibold text-blue-500 block w-full h-full"
+                    >{{ slotProps.data.waybill }}</span
+                  >
                 </template>
               </Column>
               <Column header="Đối tác" style="min-width: 150px">
@@ -348,8 +392,20 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <Button @click="onPrint" icon="pi pi-print" label="In đơn" severity="info" size="small" />
-          <Button @click="onCancelOrder(selectedOrder.waybill)" icon="pi pi-times" label="Hủy đơn" severity="warn" size="small" />
-          <Button @click="onDeleteOrder(selectedOrder.waybill)" icon="pi pi-trash" label="Xóa đơn" severity="danger" size="small" />
+          <Button
+            @click="onCancelOrder(selectedOrder.waybill)"
+            icon="pi pi-times"
+            label="Hủy đơn"
+            severity="warn"
+            size="small"
+          />
+          <Button
+            @click="onDeleteOrder(selectedOrder.waybill)"
+            icon="pi pi-trash"
+            label="Xóa đơn"
+            severity="danger"
+            size="small"
+          />
         </div>
       </template>
     </Dialog>
@@ -371,6 +427,7 @@ import {
   Column,
   Dialog,
   Timeline,
+  Checkbox,
 } from 'primevue'
 import { formatCurrency, formatDate, formatDateTime } from '@/utils/helpers'
 import { toast } from 'vue-sonner'
@@ -382,6 +439,7 @@ const dialogVisible = ref(false)
 const orders = ref([])
 const dates = ref([])
 const selectedOrder = ref(null)
+const selectedOrders = ref([])
 const selectedOrderEvents = ref([])
 const dateDisabled = ref(false)
 const carrierDisabled = ref(false)
@@ -423,9 +481,9 @@ const getOrders = async () => {
     })
     orders.value = res.data.data
     totalRecords.value = res.data.pagination.total
-    console.log(res.data)
   } catch (err) {
     console.log(err)
+    toast.error('Lỗi khi lấy danh sách đơn hàng')
   }
 }
 
@@ -444,8 +502,8 @@ const getOrderEvents = async (orderCode) => {
 }
 
 const onRowSelect = (event) => {
-  selectedOrder.value = event.data
-  getOrderEvents(event.data.id)
+  selectedOrder.value = event
+  getOrderEvents(event.id)
   dialogVisible.value = true
 }
 
@@ -492,6 +550,60 @@ const onPrint = () => {
   window.open(routeData.href, '_blank')
 }
 
+const printSizes = [
+  {
+    value: '1',
+    label: 'Nhãn A5',
+  },
+  {
+    value: '2',
+    label: 'Nhãn A6',
+  },
+  {
+    value: '100',
+    label: 'Nhãn A7',
+  },
+]
+
+const selectedCarrier = ref(null)
+const selectedSize = ref(printSizes[0].value)
+const showPostage = ref(false)
+const printLoading = ref(false)
+
+const onPrintAll = async () => {
+  if (selectedOrders.value.length === 0) {
+    toast.error('Vui lòng chọn ít nhất 1 đơn hàng')
+    return
+  }
+
+  if (!selectedCarrier.value || !selectedSize.value) {
+    toast.error('Vui lòng chọn đối tác và kích cỡ in')
+    return
+  }
+  const orders = selectedOrders.value.map((order) => order.waybill)
+
+  try {
+    printLoading.value = true
+
+    const expiryTime = new Date().getTime() + 60 * 60 * 1000
+    const response = await api.post('connector/viettelpost/order/print', {
+      expiryTime,
+      orderArray: orders,
+    })
+    if (!response.data.success) {
+      toast.error('Lỗi khi lấy mã in')
+      throw new Error('Lỗi khi lấy mã in')
+    }
+    const URL = `https://digitalize.viettelpost.vn/DigitalizePrint/report.do?type=${selectedSize.value}&bill=${response.data.data.message}&showPostage=${showPostage.value ? 1 : 0}`
+    window.open(URL, '_blank')
+  } catch (err) {
+    console.log(err)
+    toast.error(err.response?.data?.message || 'Lỗi khi lấy mã in')
+  } finally {
+    printLoading.value = false
+  }
+}
+
 const onPageChange = (event) => {
   queryParams.value.page = event.page + 1
   getOrders()
@@ -508,8 +620,7 @@ const onCancelOrder = async (orderNumber) => {
   } catch (err) {
     console.log(err)
     toast.error(err.response?.data?.message || 'Lỗi khi hủy đơn')
-  }
-  finally{
+  } finally {
     dialogVisible.value = false
   }
 }
@@ -525,8 +636,7 @@ const onDeleteOrder = async (orderNumber) => {
   } catch (err) {
     console.log(err)
     toast.error(err.response?.data?.message || 'Lỗi khi xóa đơn')
-  }
-  finally{
+  } finally {
     dialogVisible.value = false
   }
 }

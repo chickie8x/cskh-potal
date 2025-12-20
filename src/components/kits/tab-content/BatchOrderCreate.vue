@@ -21,7 +21,7 @@
           severity="info"
           label="File mẫu"
           size="small"
-          @click="fileInput.value = null"
+          @click="downloadTemplate"
         />
       </div>
     </div>
@@ -543,6 +543,16 @@ const onPrintOrder = (idx) => {
   const path = `/print-order/${carrier}?ordercode=${orderNumber}`
   const routeData = router.resolve(path)
   window.open(routeData.href, '_blank')
+}
+
+const downloadTemplate = () => {
+  const link = document.createElement('a')
+  link.href = '/docs/batch-orders.xlsx'
+  link.download = 'batch-orders.xlsx'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+
 }
 </script>
 
