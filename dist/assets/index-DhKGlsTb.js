@@ -1,1 +1,0 @@
-import{r as o,c as a,o as r}from"./index-BoRylNbp.js";const t={__name:"index",setup(s){const e=o("Hello from Admin Dashboard");return console.log(e.value),(n,c)=>(r(),a("div",null,"Admin Dashboard"))}};export{t as default};

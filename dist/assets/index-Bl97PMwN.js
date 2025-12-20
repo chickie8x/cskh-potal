@@ -1,1 +1,0 @@
-import{r,c as o,o as n}from"./index-BoRylNbp.js";const t={__name:"index",setup(s){const e=r("Hello from Admin Order");return console.log(e.value),(a,c)=>(n(),o("div",null,"Admin Order"))}};export{t as default};

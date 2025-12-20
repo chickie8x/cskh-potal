@@ -35,7 +35,7 @@
           <template #title>
             <div class="flex items-center gap-1">
               <i class="pi pi-user size-5" />
-              <span class="text-sm text-color font-bold">Người gửi</span>
+              <span class="text-sm text-color font-bold">{{ t('sender') }}</span>
             </div>
           </template>
           <template #content>
@@ -66,7 +66,7 @@
           <template #title>
             <div class="flex items-center gap-1">
               <i class="pi pi-user size-5" />
-              <span class="text-sm text-color font-bold">Người nhận</span>
+              <span class="text-sm text-color font-bold">{{ t('receiver') }}</span>
             </div>
           </template>
 
@@ -77,7 +77,7 @@
                   <InputIcon class="pi pi-user" />
                   <InputText
                     name="RECEIVER_FULLNAME"
-                    placeholder="Tên người nhận"
+                    :placeholder="t('receiverName')"
                     class="w-full"
                     size="small"
                   />
@@ -86,7 +86,7 @@
                   <InputIcon class="pi pi-phone" />
                   <InputText
                     name="RECEIVER_PHONE"
-                    placeholder="Số điện thoại người nhận"
+                    :placeholder="t('receiverPhone')"
                     class="w-full"
                     size="small"
                   />
@@ -98,7 +98,7 @@
                   :options="provinces"
                   optionValue="PROVINCE_NAME"
                   optionLabel="PROVINCE_NAME"
-                  placeholder="Tỉnh/thành phố"
+                  :placeholder="t('receiverProvince')"
                   class="w-full"
                   size="small"
                   @change="fetchDistricts($form.RECEIVER_PROVINCE.value)"
@@ -109,7 +109,7 @@
                   :options="districts"
                   optionValue="DISTRICT_NAME"
                   optionLabel="DISTRICT_NAME"
-                  placeholder="Quận/huyện"
+                  :placeholder="t('receiverDistrict')"
                   class="w-full"
                   size="small"
                   @change="fetchWards($form.RECEIVER_DISTRICT.value)"
@@ -120,7 +120,7 @@
                   :options="wards"
                   optionValue="WARDS_NAME"
                   optionLabel="WARDS_NAME"
-                  placeholder="Xã/phường"
+                  :placeholder="t('receiverWard')"
                   class="w-full"
                   size="small"
                   filter
@@ -139,7 +139,7 @@
           <template #title>
             <div class="flex items-center gap-1">
               <i class="pi pi-truck"></i>
-              <span class="text-sm text-color font-bold">Dịch vụ</span>
+              <span class="text-sm text-color font-bold">{{ t('service') }}</span>
             </div>
           </template>
 
@@ -192,22 +192,22 @@
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-shopping-cart"></i>
-              <span class="text-sm text-color font-bold">Thông tin hàng hóa</span>
+              <span class="text-sm text-color font-bold">{{ t('productInfo') }}</span>
             </div>
           </template>
 
           <template #content>
             <div class="flex flex-col gap-3">
               <div class="flex flex-col gap-2 mt-4">
-                <span class="text-sm text-color font-medium">Loại hàng hóa:</span>
+                <span class="text-sm text-color font-medium">{{ t('productType') }}</span>
                 <RadioButtonGroup name="PRODUCT_TYPE" class="flex items-center gap-12">
                   <div class="flex items-center gap-2">
                     <RadioButton value="HH" inputId="typeHH" size="small" checked />
-                    <label for="typeHH" class="text-sm text-color">Bưu phẩm</label>
+                    <label for="typeHH" class="text-sm text-color">{{ t('package') }}</label>
                   </div>
                   <div class="flex items-center gap-2">
                     <RadioButton value="TH" inputId="typeTH" size="small" />
-                    <label for="typeTH" class="text-sm text-color">Tài liệu</label>
+                    <label for="typeTH" class="text-sm text-color">{{ t('document') }}</label>
                   </div>
                 </RadioButtonGroup>
               </div>
@@ -218,7 +218,7 @@
                   <div class="flex items-center gap-4">
                     <FloatLabel variant="on">
                       <InputText id="productName" v-model="prod.PRODUCT_NAME" size="small" fluid />
-                      <label for="productName">Tên hàng hóa</label>
+                      <label for="productName">{{ t('productName') }}</label>
                     </FloatLabel>
                     <Button
                       @click="removeProduct(idx)"
@@ -239,7 +239,7 @@
                         mode="decimal"
                         showButtons
                       />
-                      <label for="productQuantity">Số lượng</label>
+                      <label for="productQuantity">{{ t('productQuantity') }}</label>
                     </FloatLabel>
                     <FloatLabel variant="on">
                       <InputNumber
@@ -249,7 +249,7 @@
                         fluid
                         class="text-sm"
                       />
-                      <label for="productWeight">Cân nặng (g)</label>
+                      <label for="productWeight">{{ t('productWeight') }}</label>
                     </FloatLabel>
                     <FloatLabel variant="on">
                       <InputNumber
@@ -259,7 +259,7 @@
                         fluid
                         class="text-sm"
                       />
-                      <label for="productPrice">Giá (VNĐ)</label>
+                      <label for="productPrice">{{ t('productPrice') }}</label>
                     </FloatLabel>
                   </div>
                 </div>
@@ -275,7 +275,7 @@
                 <div class="py-4 flex flex-col gap-2">
                   <div class="flex items-center gap-1">
                     <i class="pi pi-info-circle size-5" />
-                    <span class="text-sm text-color font-medium">Kích thước hàng hóa</span>
+                    <span class="text-sm text-color font-medium">{{ t('productSize') }}</span>
                   </div>
                   <div class="grid grid-cols-3 gap-2">
                     <FloatLabel variant="on">
@@ -286,7 +286,7 @@
                         fluid
                         :format="false"
                       />
-                      <label for="productLength">Dài(cm)</label>
+                      <label for="productLength">{{ t('productLength') }}</label>
                     </FloatLabel>
                     <FloatLabel variant="on">
                       <InputNumber
@@ -296,7 +296,7 @@
                         fluid
                         :format="false"
                       />
-                      <label for="productWidth">Rộng(cm)</label>
+                      <label for="productWidth">{{ t('productWidth') }}</label>
                     </FloatLabel>
                     <FloatLabel variant="on">
                       <InputNumber
@@ -306,19 +306,19 @@
                         fluid
                         :format="false"
                       />
-                      <label for="productHeight">Cao(cm)</label>
+                      <label for="productHeight">{{ t('productHeight') }}</label>
                     </FloatLabel>
                   </div>
                 </div>
                 <div class="mt-4 border-t border-surface py-4">
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-color">Tổng trọng lượng:</span>
+                    <span class="text-sm font-medium text-color">{{ t('totalWeight') }}</span>
                     <span class="text-sm font-semibold text-red-600"
                       >{{ formatNumber(totalWeight) }}g</span
                     >
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium text-color">Tổng giá tiền:</span>
+                    <span class="text-sm font-medium text-color">{{ t('totalPrice') }}</span>
                     <span class="text-sm font-semibold text-red-600">{{
                       formatCurrency(totalPrice)
                     }}</span>
@@ -354,13 +354,13 @@
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-money-bill size-5" />
-              <span class="text-color font-bold text-sm">Tiền thu hộ</span>
+              <span class="text-color font-bold text-sm">{{ t('codMethod') }}</span>
             </div>
           </template>
           <template #content>
             <div class="flex items-center gap-2">
               <Checkbox v-model="isCod" id="isCod" name="isCod" size="small" binary />
-              <label for="isCod" class="text-sm">Thu hộ bằng tiền hàng</label>
+              <label for="isCod" class="text-sm">{{ t('codByProductPrice') }}</label>
             </div>
             <InputNumber
               :modelValue="isCod ? totalPrice : 0"
@@ -373,22 +373,22 @@
               class="mt-2"
             />
             <div class="flex flex-col gap-2 mt-4">
-              <span class="text-sm text-color font-medium">Người trả cước</span>
+              <span class="text-sm text-color font-medium">{{ t('whoPay') }}</span>
               <RadioButtonGroup name="WHO_PAY" class="flex items-center gap-8">
                 <div class="flex items-center gap-1">
                   <RadioButton id="senderPay" value="senderPay" size="small" />
-                  <label for="senderPay" class="text-sm">Người gửi</label>
+                  <label for="senderPay" class="text-sm">{{ t('sender') }}</label>
                 </div>
                 <div class="flex items-center gap-1">
                   <RadioButton id="receiverPay" value="receiverPay" size="small" />
-                  <label for="receiverPay" class="text-sm">Người nhận</label>
+                  <label for="receiverPay" class="text-sm">{{ t('receiver') }}</label>
                 </div>
               </RadioButtonGroup>
             </div>
             <div class="mt-4">
               <FloatLabel variant="on">
                 <Textarea name="ORDER_NOTE" fluid class="text-sm" />
-                <label for="ORDER_NOTE">Ghi chú</label>
+                <label for="ORDER_NOTE">{{ t('note') }}</label>
               </FloatLabel>
             </div>
           </template>
@@ -400,17 +400,17 @@
       <template #content>
         <div class="grid grid-cols-4 gap-2 text-sm text-color">
           <div class="flex items-center gap-2">
-            <span class="font-medium">Tổng cước: </span>
+            <span class="font-medium">{{ t('totalFee') }}: </span>
             <span class="font-bold text-red-500">{{
               selectedService?.GIA_CUOC ? formatCurrency(selectedService?.GIA_CUOC) : 0
             }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="font-medium">Thời gian dự kiến: </span>
+            <span class="font-medium">{{ t('timeDiliver') }}: </span>
             <span class="font-bold text-red-500">{{ selectedService?.THOI_GIAN || 0 }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="font-medium">Tiền thu hộ: </span>
+            <span class="font-medium">{{ t('codMoney') }}: </span>
             <span class="font-bold text-red-500">{{
               formRef?.states.MONEY_COLLECTION.value
                 ? formatCurrency(formRef?.states.MONEY_COLLECTION.value)
@@ -418,11 +418,11 @@
             }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <Button type="submit" label="Tạo đơn" icon="pi pi-check" size="small" />
+            <Button type="submit" :label="t('createOrder')" icon="pi pi-check" size="small" />
             <Button
               variant="outlined"
               severity="info"
-              label="Lưu nháp"
+              :label="t('saveDraft')"
               icon="pi pi-file"
               size="small"
             />
@@ -436,7 +436,7 @@
       <Button
         @click="goToPrint"
         severity="success"
-        label="In vận đơn"
+        :label="t('printOrder')"
         icon="pi pi-print"
         size="small"
         class="min-w-32"
@@ -489,7 +489,9 @@ import { formatCurrency, formatNumber } from '@/utils/helpers'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const resolver = zodResolver(
   z.object({

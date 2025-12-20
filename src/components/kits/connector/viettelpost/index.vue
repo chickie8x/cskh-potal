@@ -4,11 +4,11 @@
       <TabList>
         <Tab value="1" as="div" class="flex items-center gap-1">
           <i class="pi pi-file-check"></i>
-          Đơn lẻ
+          {{ t('singleOrder') }}
         </Tab>
         <Tab value="2" as="div" class="flex items-center gap-1">
           <i class="pi pi-list-check"></i>
-          Đơn excel
+          {{ t('batchOrder') }}
         </Tab>
       </TabList>
       <TabPanels class="mt-4">
@@ -27,6 +27,9 @@
 import { Tabs, TabPanel, TabPanels, TabList, Tab } from 'primevue'
 import SingleOrderCreate from '../../tab-content/SingleOrderCreate.vue'
 import BatchOrderCreate from '../../tab-content/BatchOrderCreate.vue'
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

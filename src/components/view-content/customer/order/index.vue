@@ -1,9 +1,9 @@
 <template>
   <div class="h-full overflow-auto p-4">
     <div class="flex items-center justify-between gap-4">
-      <span class="text-xl font-bold text-color">Tạo đơn</span>
+      <span class="text-xl font-bold text-color">{{ t('createOrder') }}</span>
       <div class="flex items-center gap-2">
-        <span class="text-color font-bold text-sm">Đối tác</span>
+        <span class="text-color font-bold text-sm">{{ t('carrier') }}</span>
         <Select
           v-model="code"
           :options="carrierOptions"
@@ -26,8 +26,10 @@
 import { ref, onMounted } from 'vue'
 import { Select } from 'primevue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const code = ref('VIETTEL_POST')
 const carrierOptions = [

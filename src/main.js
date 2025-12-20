@@ -9,6 +9,7 @@ import { createPinia } from 'pinia'
 import piniaPersist from 'pinia-plugin-persistedstate'
 import { setAuthStoreInstance } from './api/axios'
 import Tooltip from 'primevue/tooltip'
+import i18n from './i18n'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -24,6 +25,7 @@ app.use(PrimeVue, {
     },
   },
 })
+app.use(i18n)
 app.directive('tooltip', Tooltip)
 app.mount('#app')
 setAuthStoreInstance()

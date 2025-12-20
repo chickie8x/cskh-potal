@@ -12,11 +12,13 @@
     <div class="flex items-center gap-8">
       <!-- Language Select -->
       <Select
-        v-model="language"
+        :modelValue="language"
         :options="languages"
         optionLabel="label"
         optionValue="value"
         class="w-32"
+        @change="onLanguageChange"
+        size="small"
       />
 
       <!-- Dark Mode Toggle -->
@@ -41,17 +43,16 @@ import Notification from '@/components/kits/notification/index.vue'
 import User from '@/components/kits/user/index.vue'
 import { useAuthStore } from '@/store/authstore'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
+const { locale } = useI18n()
 const authStore = useAuthStore()
 const router = useRouter()
-const baseUrl = import.meta.env.VITE_API_BASE_URL
-const userId = authStore.user?.id
-const sseUrl = `${baseUrl}/sse/events/${userId}`
 
 // Language Select
-const language = ref('vn')
+const language = ref('vi')
 const languages = [
-  { label: '🇻🇳 VN', value: 'vn' },
+  { label: '🇻🇳 VN', value: 'vi' },
   { label: '🇨🇳 中文', value: 'zh' },
 ]
 
@@ -71,5 +72,9 @@ const toggleUserMenu = (event) => {
 const logout = () => {
   authStore.clear()
   router.push('/login')
+}
+
+const onLanguageChange = (event) => {
+  locale.value = event.value
 }
 </script>

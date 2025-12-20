@@ -2,15 +2,15 @@
   <Card class="w-full mt-4">
     <template #content>
       <div>
-        <h2>Phương thức chuyển đổi</h2>
+        <h2>{{ t('convertMethod') }}</h2>
         <div class="flex items-center gap-8 py-4">
           <div class="flex items-center gap-1">
             <RadioButton v-model="converMethod" value="oldToNew" size="small" />
-            <label class="text-sm font-medium">Cũ sang mới</label>
+            <label class="text-sm font-medium">{{ t('oldToNew') }}</label>
           </div>
           <div class="flex items-center gap-1">
             <RadioButton v-model="converMethod" value="newToOld" size="small" />
-            <label class="text-sm font-medium">Mới sang cũ</label>
+            <label class="text-sm font-medium">{{ t('newToOld') }}</label>
           </div>
         </div>
       </div>
@@ -23,7 +23,7 @@
         class="grid grid-cols-3 gap-x-2 gap-y-4"
       >
         <div class="flex flex-col gap-1 col-span-1">
-          <label class="text-sm font-medium">Tỉnh/Thành phố</label>
+          <label class="text-sm font-medium">{{ t('province') }}</label>
           <Select
             name="province"
             @change="fetchDistricts($form.province.value)"
@@ -31,10 +31,11 @@
             optionLabel="PROVINCE_NAME"
             optionValue="PROVINCE_NAME"
             size="small"
+            filter
           />
         </div>
         <div class="flex flex-col gap-1 col-span-1">
-          <label class="text-sm font-medium">Quận/Huyện</label>
+          <label class="text-sm font-medium">{{ t('district') }}</label>
           <Select
             name="district"
             @change="fetchWards($form.district.value)"
@@ -42,25 +43,27 @@
             optionLabel="DISTRICT_NAME"
             optionValue="DISTRICT_NAME"
             size="small"
+            filter
           />
         </div>
         <div class="flex flex-col gap-1 col-span-1">
-          <label class="text-sm font-medium">Phường/Xã</label>
+          <label class="text-sm font-medium">{{ t('ward') }}</label>
           <Select
             name="ward"
             :options="wards"
             optionLabel="WARDS_NAME"
             optionValue="WARDS_NAME"
             size="small"
+            filter
           />
         </div>
         <div class="flex flex-col gap-1 col-span-3">
-          <label class="text-sm font-medium">Địa chỉ</label>
+          <label class="text-sm font-medium">{{ t('address') }}</label>
           <InputText name="address" size="small" />
         </div>
         <Button
           type="submit"
-          label="Chuyển đổi"
+          :label="t('convert')"
           icon="pi pi-check"
           :loading="loading"
           size="small"
@@ -76,7 +79,7 @@
         class="grid grid-cols-2 gap-x-2 gap-y-4"
       >
         <div class="flex flex-col gap-1 col-span-1">
-          <label class="text-sm font-medium">Tỉnh/Thành phố</label>
+          <label class="text-sm font-medium">{{ t('province') }}</label>
           <Select
             name="province"
             @change="fetchWardsNew($form.province.value)"
@@ -84,25 +87,27 @@
             optionLabel="PROVINCE_NAME"
             optionValue="PROVINCE_NAME"
             size="small"
+            filter
           />
         </div>
         <div class="flex flex-col gap-1 col-span-1">
-          <label class="text-sm font-medium">Phường/Xã</label>
+          <label class="text-sm font-medium">{{ t('ward') }}</label>
           <Select
             name="ward"
             :options="wards"
             optionLabel="WARDS_NAME"
             optionValue="WARDS_NAME"
             size="small"
+            filter
           />
         </div>
         <div class="flex flex-col gap-1 col-span-3">
-          <label class="text-sm font-medium">Địa chỉ</label>
+          <label class="text-sm font-medium">{{ t('address') }}</label>
           <InputText name="address" size="small" />
         </div>
         <Button
           type="submit"
-          label="Chuyển đổi"
+          :label="t('convert')"
           icon="pi pi-check"
           :loading="loading"
           size="small"
@@ -138,7 +143,7 @@
     </template>
     <template #content>
       <div class="flex items-center text-sm">
-        <Message severity="error" icon="pi pi-ban" size="small">Đã có lỗi xảy ra</Message>
+        <Message severity="error" icon="pi pi-ban" size="small">{{ t('errorHappened') }}</Message>
       </div>
     </template>
   </Card>
@@ -152,6 +157,9 @@ import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
 import api from '@/api/axios'
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const provinces = ref([])
 const districts = ref([])

@@ -4,11 +4,11 @@
       <div class="flex items-center gap-8 py-4">
         <div class="flex items-center gap-1">
           <RadioButton v-model="verrifyMode" value="single" size="small" />
-          <label for="" class="text-sm text-color font-medium">Địa chỉ đơn lẻ</label>
+          <label for="" class="text-sm text-color font-medium">{{ t('singleAddress') }}</label>
         </div>
         <div class="flex items-center gap-1">
           <RadioButton v-model="verrifyMode" value="batch" size="small" />
-          <label for="" class="text-sm text-color font-medium">Địa chỉ hàng loạt</label>
+          <label for="" class="text-sm text-color font-medium">{{ t('batchAddress') }}</label>
         </div>
       </div>
       <div v-if="verrifyMode === 'single'">
@@ -20,12 +20,12 @@
         >
           <div class="flex items-end gap-1 w-full">
             <div class="flex flex-col gap-1 flex-1">
-              <label class="text-sm font-medium">Địa chỉ</label>
+              <label class="text-sm font-medium">{{ t('address') }}</label>
               <InputText name="address" class="w-full" size="small" />
             </div>
             <Button
               type="submit"
-              label="Xác minh"
+              :label="t('verify')"
               icon="pi pi-check"
               :loading="loading"
               size="small"
@@ -39,7 +39,7 @@
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-check-circle text-green-900" />
-              <h2 class="text-green-900 font-bold text-xl">Kết quả</h2>
+              <h2 class="text-green-900 font-bold text-xl">{{ t('result') }}</h2>
             </div>
           </template>
           <template #content>
@@ -52,12 +52,12 @@
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-times-circle text-red-900" />
-              <h2 class="text-red-900 font-bold text-xl">Kết quả</h2>
+              <h2 class="text-red-900 font-bold text-xl">{{ t('result') }}</h2>
             </div>
           </template>
           <template #content>
             <div class="flex items-center text-sm">
-              <Message severity="error" icon="pi pi-ban" size="small">Đã có lỗi xảy ra</Message>
+              <Message severity="error" icon="pi pi-ban" size="small">{{ t('errorHappened') }}</Message>
             </div>
           </template>
         </Card>
@@ -65,7 +65,7 @@
       <div v-if="verrifyMode === 'batch'">
         <div class="flex items-end gap-4 justify-between">
           <div class="flex items-end">
-            <span class="flex items-center gap-1 text-sm"
+            <span v-if="filename" class="flex items-center gap-1 text-sm"
               ><i class="pi pi-file text-primary"></i>{{ filename }}</span
             >
           </div>
@@ -74,20 +74,21 @@
               ref="fileChooser"
               type="file"
               name="file"
+              accept=".xlsx, .xls"
               id="fileChooser"
               hidden
               @change="onFileChange"
             />
             <Button
               type="button"
-              label="Chọn file"
+              :label="t('upload')"
               size="small"
               icon="pi pi-upload"
               @click="fileChooser.click()"
             />
             <Button
               icon="pi pi-download"
-              label="File mẫu"
+              :label="t('downloadTemplate')"
               variant="outlined"
               severity="info"
               size="small"
@@ -98,14 +99,14 @@
         <div v-if="file" class="mt-2">
           <DataTable :value="addresses" responsiveLayout="scroll" showGridlines>
             <Column field="index" header="STT" style="text-align: center; padding: 1rem" />
-            <Column field="address" header="Địa chỉ" style="width: 50%; padding: 1rem">
+            <Column field="address" :header="t('address')" style="width: 50%; padding: 1rem">
               <template #body="slotProps">
                 <span class="text-sm">{{ slotProps.data.address }}</span>
               </template>
             </Column>
             <Column
               field="verifiedAddress"
-              header="Địa chỉ đã xác minh"
+              :header="t('verifiedAddress')"
               style="width: 50%; padding: 1rem"
             >
               <template #body="slotProps">
@@ -133,7 +134,7 @@
             <Button
               @click="batchVerify"
               type="button"
-              label="Xác minh"
+              :label="t('verify')"
               icon="pi pi-check"
               :loading="loading"
               size="small"
@@ -155,6 +156,9 @@ import { toast } from 'vue-sonner'
 import api from '@/api/axios'
 import * as XLSX from 'xlsx'
 import { chunkArray } from '@/utils/helpers'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const loading = ref(false)
 const resolver = zodResolver(z.object({ address: z.string().min(1) }))
@@ -168,7 +172,7 @@ const isDone = ref(false)
 
 const onFormSubmit = async ($form) => {
   if (!$form.valid) {
-    toast.error('Vui lòng nhập đầy đủ thông tin')
+    toast.error(t('enterAllInfoNeeded'))
     return
   }
   loading.value = true
@@ -180,10 +184,10 @@ const onFormSubmit = async ($form) => {
       verifiedAddressSingle.value = response.data.data?.formattedAddress
       isDone.value = true
     } else {
-      toast.error(response.data.message || 'Địa chỉ không hợp lệ')
+      toast.error(response.data.message || t('addressInvalid'))
     }
   } catch (error) {
-    toast.error('Địa chỉ không hợp lệ')
+    toast.error(t('addressInvalid'))
     console.error(error)
   } finally {
     loading.value = false
@@ -216,7 +220,7 @@ const onFileChange = (event) => {
 
 const batchVerify = async () => {
   if (!file.value) {
-    toast.error('Vui lòng chọn file')
+    toast.error(t('selectFile'))
     return
   }
   loading.value = true
@@ -238,7 +242,7 @@ const batchVerify = async () => {
     results.forEach((response) => {
       if (response.status === 'fulfilled') {
         addresses.value[response.value.idx].verifiedAddress =
-          response.value.res.data?.data?.formattedAddress || 'Lỗi'
+          response.value.res.data?.data?.formattedAddress || t('error')
       } else {
         console.log(response.value)
         // addresses.value[response.value.idx].verifiedAddress = 'Lỗi khi xác minh địa chỉ'

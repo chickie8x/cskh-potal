@@ -1,11 +1,11 @@
 <template>
   <div class="h-full p-4 flex flex-col gap-2 overflow-auto">
-    <span class="text-xl font-semibold text-color">Quản lý đơn hàng</span>
+    <span class="text-xl font-semibold text-color">{{ t('orderManagementTitle') }}</span>
 
     <div class="mt-4">
       <Card>
         <template #title>
-          <span class="text-color font-semibold text-sm">Bộ lọc tìm kiếm</span>
+          <span class="text-color font-semibold text-sm">{{ t('searchFilter') }}</span>
         </template>
         <template #content>
           <div class="grid grid-cols-4 gap-4">
@@ -14,7 +14,7 @@
                 <InputIcon class="pi pi-search" />
                 <InputText
                   v-model="queryParams.orderNumber"
-                  placeholder="Lọc theo mã vận đơn"
+                  :placeholder="t('filterByOrderNumber')"
                   size="small"
                   fluid=""
                   @update:model-value="onOrderNumberChange"
@@ -29,7 +29,7 @@
                 manulInput="false"
                 dateFormat="dd/mm/yy"
                 size="small"
-                placeholder="Lọc theo thời gian"
+                :placeholder="t('filterByTime')"
                 fluid
                 @update:model-value="onDateChange"
                 :disabled="dateDisabled"
@@ -42,7 +42,7 @@
                 :options="carriers"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Lọc theo đối tác"
+                :placeholder="t('filterByCarrier')"
                 size="small"
                 fluid
                 @update:model-value="onCarrierChange"
@@ -55,10 +55,10 @@
                 icon="pi pi-filter-slash"
                 variant="outlined"
                 severity="danger"
-                label="Xóa bộ lọc"
+                :label="t('resetFilter')"
                 size="small"
               />
-              <Button @click="getOrders" icon="pi pi-filter" label="Tìm kiếm" size="small" />
+              <Button @click="getOrders" icon="pi pi-filter" :label="t('search')" size="small" />
             </div>
           </div>
         </template>
@@ -69,11 +69,11 @@
       <Card>
         <template #title>
           <div class="flex items-center justify-between">
-            <span class="text-color font-semibold text-sm">Danh sách đơn hàng</span>
+            <span class="text-color font-semibold text-sm">{{ t('orderList') }}</span>
             <div class="flex items-center gap-8">
               <div class="flex items-center gap-1">
                 <Checkbox v-model="showPostage" binary id="showPostage" size="small" />
-                <label for="showPostage" class="mt-1 text-sm font-medium">Hiển thị cước phí</label>
+                <label for="showPostage" class="mt-1 text-sm font-medium">{{ t('showPostage') }}</label>
               </div>
               <Select
                 v-model="selectedSize"
@@ -81,7 +81,7 @@
                 optionLabel="label"
                 optionValue="value"
                 checkmark
-                placeholder="Chọn kích cỡ in"
+                :placeholder="t('printSize')"
                 size="small"
                 class="w-40"
                 id="printSize"
@@ -92,14 +92,14 @@
                 optionLabel="label"
                 optionValue="value"
                 checkmark
-                placeholder="Chọn đối tác"
+                :placeholder="t('carrier')"
                 size="small"
                 class="w-40"
                 id="carrier"
               />
               <Button
                 @click="onPrintAll"
-                label="In vận đơn"
+                :label="t('printAll')"
                 variant="outlined"
                 icon="pi pi-print"
                 size="small"
@@ -130,7 +130,10 @@
                 selectionMode="multiple"
                 headerStyle="width: 3rem"
               ></Column>
-              <Column frozen alignFrozen="left" header="Mã vận đơn" style="min-width: 150px">
+              <Column frozen alignFrozen="left" style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('orderNumber') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span
                     @click="onRowSelect(slotProps.data)"
@@ -139,47 +142,68 @@
                   >
                 </template>
               </Column>
-              <Column header="Đối tác" style="min-width: 150px">
+              <Column style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('carrier') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{
                     carrierMapper[slotProps.data.carrier] || ''
                   }}</span>
                 </template>
               </Column>
-              <Column header="Mặt hàng" style="min-width: 250px">
+              <Column style="min-width: 250px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('productName') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{
                     slotProps.data.rawData.PRODUCT_NAME || ''
                   }}</span>
                 </template>
               </Column>
-              <Column header="Giá cước" style="min-width: 150px">
+              <Column style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('productPrice') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{
                     formatCurrency(slotProps.data.rawData.MONEY_TOTAL) || ''
                   }}</span>
                 </template>
               </Column>
-              <Column header="COD" style="min-width: 150px">
+              <Column style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('cod') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{
                     formatCurrency(slotProps.data.rawData.MONEY_COLLECTION) || ''
                   }}</span>
                 </template>
               </Column>
-              <Column header="Trạng thái" style="min-width: 150px">
+              <Column style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('status') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{ slotProps.data.lastStatus || '' }}</span>
                 </template>
               </Column>
-              <Column header="Cập nhật" style="min-width: 150px">
+              <Column style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('update') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{
                     formatDate(slotProps.data.lastSyncedAt) || ''
                   }}</span>
                 </template>
               </Column>
-              <Column header="Ngày tạo đơn" style="min-width: 150px">
+              <Column style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('createdAt') }}</span>
+                </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{
                     formatDate(slotProps.data.createdAt) || ''
@@ -413,7 +437,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import api from '@/api/axios'
 import {
   Card,
@@ -432,7 +456,9 @@ import {
 import { formatCurrency, formatDate, formatDateTime } from '@/utils/helpers'
 import { toast } from 'vue-sonner'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 
 const dialogVisible = ref(false)
@@ -550,23 +576,23 @@ const onPrint = () => {
   window.open(routeData.href, '_blank')
 }
 
-const printSizes = [
+const printSizes = computed(() => [
   {
     value: '1',
-    label: 'Nhãn A5',
+    label: t('printA5'),
   },
   {
     value: '2',
-    label: 'Nhãn A6',
+    label: t('printA6'),
   },
   {
     value: '100',
-    label: 'Nhãn A7',
+    label: t('printA7'),
   },
-]
+])
 
 const selectedCarrier = ref(null)
-const selectedSize = ref(printSizes[0].value)
+const selectedSize = ref('1')
 const showPostage = ref(false)
 const printLoading = ref(false)
 

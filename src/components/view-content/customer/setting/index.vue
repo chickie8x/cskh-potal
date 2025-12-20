@@ -1,16 +1,16 @@
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold">Settings</h1>
-    <span class="text-sm text-gray-500">Quản lý cài đặt tài khoản và các dịch vụ tích hợp.</span>
+    <h1 class="text-2xl font-bold">{{ t('settings') }}</h1>
+    <span class="text-sm text-gray-500">{{ t('settingDescription') }}</span>
     <div class="mt-4 flex flex-col gap-4">
       <Card>
         <template #title>
           <div class="flex items-center gap-2">
             <i class="pi pi-truck text-primary"></i>
-            <span>Đơn vị vận chuyển</span>
+            <span class="text-sm text-color">{{ t('carrier') }}</span>
           </div>
           <div>
-            <span class="text-sm text-gray-500">Quản lý các đơn vị vận chuyển đã kết nối</span>
+            <span class="text-sm text-muted-color">{{ t('manageConnectedCarrier') }}</span>
           </div>
         </template>
         <template #content>
@@ -22,7 +22,7 @@
               </IconField>
               <Button
                 @click="connectCarrier"
-                label="Thêm mới"
+                :label="t('add')"
                 size="small"
                 icon="pi pi-plus"
                 class="ml-2"
@@ -65,7 +65,7 @@
                         >
                       </div>
                       <div class="text-sm text-gray-500 flex items-center">
-                        Hết hạn: {{ carrier.expiredAt }}
+                        {{ t('expiredAt') }}: {{ carrier.expiredAt }}
                       </div>
                       <div class="text-sm text-gray-500 flex justify-end">
                         <Button
@@ -88,11 +88,11 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <i class="pi pi-truck text-primary"></i>
-              <span>Địa chỉ</span>
+              <span class="text-sm text-color">{{ t('address') }}</span>
             </div>
             <div>
               <Button
-                label="Thêm mới"
+                :label="t('add')"
                 size="small"
                 icon="pi pi-plus"
                 class="ml-2"
@@ -101,7 +101,7 @@
             </div>
           </div>
           <div>
-            <span class="text-sm text-gray-500">Quản lý các địa chỉ của người dùng</span>
+            <span class="text-sm text-muted-color">{{ t('manageUserAddress') }}</span>
           </div>
         </template>
         <template #content>
@@ -148,7 +148,9 @@ import AddressBar from '@/components/kits/addressbar/index.vue'
 import api from '@/api/axios'
 import { formatDateTime } from '@/utils/helpers'
 import { useAuthStore } from '@/store/authstore'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const authstore = useAuthStore()
 const carrierSearchQuery = ref('')
 const addresses = computed(() => {

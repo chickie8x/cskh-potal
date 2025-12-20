@@ -1,11 +1,11 @@
 <template>
   <div class="h-full p-4 flex flex-col gap-2 overflow-auto">
     <div class="flex items-center justify-between">
-      <span class="text-xl font-semibold text-color">Quản lý ticket</span>
+      <span class="text-xl font-semibold text-color">{{ t('ticketManagement') }}</span>
       <Button
         @click="isExpanded = !isExpanded"
         :icon="isExpanded ? 'pi pi-times' : 'pi pi-plus'"
-        :label="isExpanded ? 'Đóng' : 'Thêm mới'"
+        :label="isExpanded ? t('close') : t('createTicket')"
         :severity="!isExpanded ? '' : 'danger'"
         size="small"
         class="min-w-28"
@@ -36,7 +36,7 @@
               :options="ticketCategories"
               optionLabel="label"
               optionValue="value"
-              placeholder="Chọn loại ticket"
+              :placeholder="t('ticketCategory')"
               value="value"
               size="small"
             />
@@ -45,25 +45,25 @@
               :options="carriers"
               optionLabel="label"
               optionValue="value"
+              :placeholder="t('carrier')"
               value="value"
-              placeholder="Chọn đơn vị vận chuyển"
               size="small"
             />
             <InputText
               name="ticketItems"
-              placeholder="Nhập mã vận đơn, cách nhau dấu phẩy"
+              :placeholder="t('ticketItemsHint')"
               class="col-span-2"
               size="small"
             />
             <Textarea
               name="description"
-              placeholder="Mô tả chi tiết"
+              :placeholder="t('description')"
               class="col-span-2"
               size="small"
             />
             <div class="col-span-2">
               <span class="text-sm text-color font-medium"
-                >File đính kèm (tối đa 5 file, mỗi file không quá 5MB)</span
+                >{{ t('fileAttachedHints') }}</span
               >
               <div class="mt-2 flex gap-2">
                 <input
@@ -84,7 +84,7 @@
                 />
                 <Button
                   @click="imgAttached.click()"
-                  label="Hình ảnh"
+                  :label="t('imgAttached')"
                   icon="pi pi-image"
                   size="small"
                   outlined
@@ -92,7 +92,7 @@
                 />
                 <Button
                   @click="fileAttached.click()"
-                  label="Excel"
+                  :label="t('excelAttached')"
                   icon="pi pi-file-excel"
                   size="small"
                   outlined
@@ -148,7 +148,7 @@
                 type="submit"
                 :loading="createLoading"
                 icon="pi pi-check"
-                label="Tạo ticket"
+                :label="t('createTicket')"
                 size="small"
               />
             </div>
@@ -181,7 +181,7 @@
           :options="ticketCategories"
           optionLabel="label"
           optionValue="value"
-          placeholder="Chọn loại ticket"
+          :placeholder="t('ticketCategory')"
           size="small"
           class="w-full"
         />
@@ -190,7 +190,7 @@
           :options="ticketStatus"
           optionLabel="label"
           optionValue="value"
-          placeholder="Chọn trạng thái"
+          :placeholder="t('ticketStatus')"
           size="small"
           class="w-full"
         />
@@ -199,7 +199,7 @@
           :options="ticketPriorities"
           optionLabel="label"
           optionValue="value"
-          placeholder="Chọn mức ưu tiên"
+          :placeholder="t('ticketPriority')"
           size="small"
           class="w-full"
         />
@@ -215,7 +215,7 @@
           :loading="queryLoading"
           type="submit"
           icon="pi pi-search"
-          label="Tìm kiếm"
+          :label="t('search')"
           size="small"
           class="min-w-28"
         />
@@ -239,13 +239,13 @@
             :lazy="true"
           >
             <Column expander />
-            <Column field="carrier" header="Đơn vị vận chuyển" class="text-sm" />
-            <Column field="category" header="Loại ticket" class="text-sm">
+            <Column field="carrier" :header="t('carrier')" class="text-sm" />
+            <Column field="category" :header="t('ticketCategory')" class="text-sm">
               <template #body="slotProps">
                 {{ categoryMap[slotProps.data.category] }}
               </template>
             </Column>
-            <Column field="priority" header="Ưu tiên">
+            <Column field="priority" :header="t('ticketPriority')">
               <template #body="slotProps">
                 <Tag
                   :value="slotProps.data.priority"
@@ -254,7 +254,7 @@
                 />
               </template>
             </Column>
-            <Column field="status" header="Trạng thái" class="text-sm">
+            <Column field="status" :header="t('ticketStatus')" class="text-sm">
               <template #body="slotProps">
                 <Tag
                   :value="slotProps.data.status"
@@ -263,17 +263,17 @@
                 />
               </template>
             </Column>
-            <Column field="description" header="Ghi chú" class="text-sm">
+            <Column field="description" :header="t('description')" class="text-sm">
               <template #body="slotProps">
                 {{ slotProps.data.description }}
               </template>
             </Column>
-            <Column field="slaDueAt" header="SLA" class="text-sm">
+            <Column field="slaDueAt" :header="t('sla')" class="text-sm">
               <template #body="slotProps">
                 {{ formatDateTime(slotProps.data.slaDueAt) }}
               </template>
             </Column>
-            <Column field="createdAt" header="Ngày tạo" class="text-sm">
+            <Column field="createdAt" :header="t('createdAt')" class="text-sm">
               <template #body="slotProps">
                 {{ formatDateTime(slotProps.data.createdAt) }}
               </template>
@@ -338,6 +338,9 @@ import {
   ticketStatus,
 } from './config'
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const isExpanded = ref(false)
 const imgAttached = ref(null)

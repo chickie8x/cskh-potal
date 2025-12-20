@@ -14,12 +14,12 @@
           class="hidden"
           @change="onFileChange"
         />
-        <Button icon="pi pi-upload" label="Upload" size="small" @click="fileInput.click()" />
+        <Button icon="pi pi-upload" :label="t('upload')" size="small" @click="fileInput.click()" />
         <Button
           icon="pi pi-download"
           variant="outlined"
           severity="info"
-          label="File mẫu"
+          :label="t('downloadTemplate')"
           size="small"
           @click="downloadTemplate"
         />
@@ -30,7 +30,7 @@
       <template #title>
         <div class="flex items-center gap-1">
           <i class="pi pi-user size-5" />
-          <span class="font-semibold text-color text-sm">Thông tin người gửi</span>
+          <span class="font-semibold text-color text-sm">{{ t('sender') }}</span>
         </div>
       </template>
 
@@ -61,14 +61,14 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1">
             <i class="pi pi-list size-5 mt-1" />
-            <span class="font-semibold text-color text-sm">Danh sách đơn hàng</span>
+            <span class="font-semibold text-color text-sm">{{ t('orderList') }}</span>
           </div>
           <div class="flex items-center gap-2">
             <Button
               icon="pi pi-check"
               variant="outlined"
               severity="info"
-              label="Xác nhận"
+              :label="t('confirm')"
               size="small"
               @click="fetchServices"
             />
@@ -77,7 +77,7 @@
               @click="batchOrderCreate"
               icon="pi pi-file-plus"
               size="small"
-              label="Tạo đơn"
+              :label="t('createOrder')"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@
       <template #content>
         <div class="mb-2">
           <span class="text-xs text-orange-600"
-            >Lưu ý(*): Các thay đổi ( trừ phần dịch vụ ) sẽ cần xác nhận lại các đơn hàng</span
+            >{{ t('orderListExcelChangedHint') }}</span
           >
         </div>
         <DataTable
@@ -113,7 +113,7 @@
             v-if="printShow"
             frozen
             alignFrozen="left"
-            header="In đơn"
+            :header="t('printOrder')"
             style="min-width: 64px"
             class="frozen-column-emerald"
           >
@@ -130,7 +130,7 @@
             frozen
             alignFrozen="left"
             field="Trạng thái"
-            header="Trạng thái"
+            :header="t('status')"
             style="min-width: 120px"
             class="frozen-column-emerald"
           >
@@ -154,7 +154,7 @@
             frozen
             alignFrozen="left"
             field="Dịch vụ"
-            header="Dịch vụ"
+            :header="t('service')"
             style="min-width: 250px; font-size: 12px"
             class="frozen-column-emerald"
           >
@@ -182,7 +182,7 @@
             frozen
             alignFrozen="left"
             field="Giá cước"
-            header="Giá cước"
+            :header="t('totalFee')"
             style="min-width: 100px"
             class="frozen-column-emerald"
           >
@@ -200,7 +200,7 @@
             v-for="col in Object.entries(fieldMapper)"
             :key="col[0]"
             :field="col[1]"
-            :header="col[0]"
+            :header="t(col[1])"
             :style="styleMapper[col[1]]"
           >
             <template #body="{ data, field }">
@@ -258,7 +258,6 @@ import {
   IconField,
   InputIcon,
   InputNumber,
-  Dialog,
 } from 'primevue'
 import * as XLSX from 'xlsx'
 import { useAuthStore } from '@/store/authstore'
@@ -266,6 +265,9 @@ import { toast } from 'vue-sonner'
 import { chunkArray, formatCurrency } from '@/utils/helpers'
 import api from '@/api/axios'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()
