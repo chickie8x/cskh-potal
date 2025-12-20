@@ -580,7 +580,7 @@ const onPrintAll = async () => {
     toast.error('Vui lòng chọn đối tác và kích cỡ in')
     return
   }
-  const orders = selectedOrders.value.map((order) => order.waybill)
+  const orders = selectedOrders.value.filter((order) => order.carrier === selectedCarrier.value).map((order) => order.waybill)
 
   try {
     printLoading.value = true
