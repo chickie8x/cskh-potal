@@ -27,7 +27,7 @@
 import { Tabs, TabPanel, TabPanels, TabList, Tab } from 'primevue'
 import SingleOrderCreate from '../../tab-content/SingleOrderCreate.vue'
 import BatchOrderCreate from '../../tab-content/BatchOrderCreate.vue'
-import { useI18n } from 'vue-i18n';
+import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 </script>

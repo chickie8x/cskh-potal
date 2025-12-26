@@ -71,9 +71,12 @@ watch(collapsed, () => {
   emit('collapse', collapsed.value)
 })
 onMounted(() => {
-  active.value = menuItems.find(
+  const matchingItem = menuItems.find(
     (item) => route.path.includes(item.path) || item.path.includes(route.path),
-  ).label
+  )
+  if (matchingItem) {
+    active.value = matchingItem.label
+  }
 })
 </script>
 

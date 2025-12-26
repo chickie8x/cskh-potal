@@ -8,14 +8,56 @@
       class="w-full flex flex-col gap-4"
     >
       <div>
+        <IconField>
+          <InputIcon class="pi pi-warehouse" />
+          <InputText
+            name="addressName"
+            :placeholder="t('addressName')"
+            class="w-full"
+            size="small"
+          />
+        </IconField>
+        <Message v-if="$form.addressName?.invalid" severity="error" size="small" variant="simple">{{
+          $form.addressName.error?.message
+        }}</Message>
+      </div>
+      <div>
+        <IconField>
+          <InputIcon class="pi pi-phone" />
+          <InputText
+            name="addressPhone"
+            :placeholder="t('addressPhone')"
+            class="w-full"
+            size="small"
+          />
+        </IconField>
+        <Message
+          v-if="$form.addressPhone?.invalid"
+          severity="error"
+          size="small"
+          variant="simple"
+          >{{ $form.addressPhone.error?.message }}</Message
+        >
+      </div>
+      <div>
+        <IconField>
+          <InputIcon class="pi pi-hashtag" />
+          <InputText name="addressTag" :placeholder="t('addressTag')" class="w-full" size="small" />
+        </IconField>
+        <Message v-if="$form.addressTag?.invalid" severity="error" size="small" variant="simple">{{
+          $form.addressTag.error?.message
+        }}</Message>
+      </div>
+      <div>
         <Select
           name="province"
           optionLabel="PROVINCE_NAME"
           optionValue="PROVINCE_NAME"
           :options="provinces"
-          placeholder="Tỉnh/Thành phố"
+          :placeholder="t('province')"
           @change="fetchDistricts($form.province.value)"
           class="min-w-64 w-full"
+          size="small"
         />
         <Message v-if="$form.province?.invalid" severity="error" size="small" variant="simple">{{
           $form.province.error?.message
@@ -27,9 +69,10 @@
           optionLabel="DISTRICT_NAME"
           optionValue="DISTRICT_NAME"
           :options="districts"
-          placeholder="Quận/Huyện"
+          :placeholder="t('district')"
           @change="fetchWards($form.district.value)"
           class="min-w-64 w-full"
+          size="small"
         />
         <Message v-if="$form.district?.invalid" severity="error" size="small" variant="simple">{{
           $form.district.error?.message
@@ -41,15 +84,21 @@
           optionLabel="WARDS_NAME"
           optionValue="WARDS_NAME"
           :options="wards"
-          placeholder="Phường/Xã"
+          :placeholder="t('ward')"
           class="min-w-64 w-full"
+          size="small"
         />
         <Message v-if="$form.ward?.invalid" severity="error" size="small" variant="simple">{{
           $form.ward.error?.message
         }}</Message>
       </div>
       <div>
-        <InputText name="address" placeholder="Địa chỉ" class="min-w-64 w-full" />
+        <InputText
+          name="address"
+          :placeholder="t('address')"
+          class="min-w-64 w-full"
+          size="small"
+        />
         <Message v-if="$form.address?.invalid" severity="error" size="small" variant="simple">{{
           $form.address.error?.message
         }}</Message>
@@ -61,12 +110,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Select, InputText, Button, Message } from 'primevue'
+import { Select, InputText, Button, Message, InputIcon, IconField } from 'primevue'
 import { Form } from '@primevue/forms'
 import api from '@/api/axios'
 import { toast } from 'vue-sonner'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const provinces = ref([])
 const districts = ref([])
@@ -77,6 +129,9 @@ const emits = defineEmits(['addressAdd'])
 const resolver = ref(
   zodResolver(
     z.object({
+      addressName: z.string().min(1, 'Tên kho/ Nhân viên is required'),
+      addressPhone: z.string().min(1, 'Số điện thoại kho/ Nhân viên is required'),
+      addressTag: z.string().min(1, 'Nhãn is required'),
       province: z.string().min(1, 'Tỉnh/Thành phố is required'),
       district: z.string().min(1, 'Quận/Huyện is required'),
       ward: z.string().min(1, 'Phường/Xã is required'),
@@ -150,9 +205,14 @@ const onFormSubmit = async ($form) => {
     toast.error('Vui lòng nhập đầy đủ thông tin')
     return
   }
-  const payload = `${$form.values.address}, ${$form.values.ward}, ${$form.values.district}, ${$form.values.province}`
+  const data = {}
+  const address = `${$form.values.address}, ${$form.values.ward}, ${$form.values.district}, ${$form.values.province}`
+  data.address = address
+  data.addressName = $form.values.addressName
+  data.addressPhone = $form.values.addressPhone
+  data.addressTag = $form.values.addressTag
   try {
-    const response = await api.post('/customer/address', { address: payload })
+    const response = await api.post('/customer/address', data)
     if (response.data.success) {
       toast.success('Thêm địa chỉ thành công')
       emits('addressAdd')

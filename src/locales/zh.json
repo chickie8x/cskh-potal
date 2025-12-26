@@ -58,7 +58,7 @@
   "document": "文件",
   "upload": "上传",
   "downloadTemplate": "下载模板",
-   "confirm": "确认",
+  "confirm": "确认",
   "orderListExcelChangedHint": "注意（*）：除服务项外，其他内容如有变更，需重新确认运单",
 
   "RECEIVER_FULLNAME": "收件人姓名（*）",

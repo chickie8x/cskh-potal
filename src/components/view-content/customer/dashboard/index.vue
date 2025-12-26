@@ -73,7 +73,9 @@
             <div class="flex items-center gap-8">
               <div class="flex items-center gap-1">
                 <Checkbox v-model="showPostage" binary id="showPostage" size="small" />
-                <label for="showPostage" class="mt-1 text-sm font-medium">{{ t('showPostage') }}</label>
+                <label for="showPostage" class="mt-1 text-sm font-medium">{{
+                  t('showPostage')
+                }}</label>
               </div>
               <Select
                 v-model="selectedSize"
@@ -105,6 +107,7 @@
                 size="small"
                 :loading="printLoading"
               />
+              <Button :label="t('exportExcel')" icon="pi pi-download" size="small" @click="exportToExcel" />
             </div>
           </div>
         </template>
@@ -164,11 +167,21 @@
               </Column>
               <Column style="min-width: 150px">
                 <template #header>
-                  <span class="text-sm font-bold">{{ t('productPrice') }}</span>
+                  <span class="text-sm font-bold">{{ t('serviceCost') }}</span>
                 </template>
                 <template #body="slotProps">
                   <span class="text-sm text-color">{{
                     formatCurrency(slotProps.data.rawData.MONEY_TOTAL) || ''
+                  }}</span>
+                </template>
+              </Column>
+              <Column style="min-width: 150px">
+                <template #header>
+                  <span class="text-sm font-bold">{{ t('productPrice') }}</span>
+                </template>
+                <template #body="slotProps">
+                  <span class="text-sm text-color">{{
+                    formatCurrency(slotProps.data.rawData.PRODUCT_PRICE) || ''
                   }}</span>
                 </template>
               </Column>
@@ -182,12 +195,12 @@
                   }}</span>
                 </template>
               </Column>
-              <Column style="min-width: 150px">
+              <Column style="min-width: 250px">
                 <template #header>
                   <span class="text-sm font-bold">{{ t('status') }}</span>
                 </template>
                 <template #body="slotProps">
-                  <span class="text-sm text-color">{{ slotProps.data.lastStatus || '' }}</span>
+                  <span class="text-sm text-color">{{ orderStatusMapper[slotProps.data.carrier][slotProps.data.lastStatus] || '' }}</span>
                 </template>
               </Column>
               <Column style="min-width: 150px">
@@ -453,10 +466,11 @@ import {
   Timeline,
   Checkbox,
 } from 'primevue'
-import { formatCurrency, formatDate, formatDateTime } from '@/utils/helpers'
+import { formatCurrency, formatDate, formatDateTime, preProcessData, exportExcel } from '@/utils/helpers'
 import { toast } from 'vue-sonner'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { orderStatusMapper } from '@/utils/const'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -606,7 +620,9 @@ const onPrintAll = async () => {
     toast.error('Vui lòng chọn đối tác và kích cỡ in')
     return
   }
-  const orders = selectedOrders.value.filter((order) => order.carrier === selectedCarrier.value).map((order) => order.waybill)
+  const orders = selectedOrders.value
+    .filter((order) => order.carrier === selectedCarrier.value)
+    .map((order) => order.waybill)
 
   try {
     printLoading.value = true
@@ -666,6 +682,15 @@ const onDeleteOrder = async (orderNumber) => {
     dialogVisible.value = false
   }
 }
+
+const exportToExcel = () => {
+  if (!selectedOrders.value || selectedOrders.value.length === 0) {
+    toast.warning('Vui lòng chọn ít nhất một đơn hàng để xuất Excel');
+    return;
+  }
+  const data = preProcessData(selectedOrders.value);
+  exportExcel(data);
+};
 
 onMounted(() => {
   getOrders()

@@ -3,9 +3,9 @@
     ref="formRef"
     v-slot="$form"
     :initialValues="{
-      SENDER_FULLNAME: authstore.user.name,
-      SENDER_PHONE: authstore.user.phone,
-      SENDER_ADDRESS: senderAddr,
+      SENDER_FULLNAME: senderAddr.addressName,
+      SENDER_PHONE: senderAddr.addressPhone,
+      SENDER_ADDRESS: senderAddr.address,
       RECEIVER_FULLNAME: '',
       RECEIVER_PHONE: '',
       RECEIVER_PROVINCE: '',
@@ -57,7 +57,30 @@
                 class="w-full"
                 size="small"
                 checkmark
-              />
+                @change="onSenderAdressChange($form, $event)"
+              >
+                <template #option="slotProps">
+                  <div class="flex flex-col gap-2 py-2">
+                    <div class="flex items-center gap-8">
+                      <span class="text-sm font-semibold text-color"
+                        ><i class="pi pi-warehouse size-4 mr-1" />{{
+                          slotProps.option.addressName
+                        }}</span
+                      >
+                      <span class="text-sm font-semibold text-color"
+                        ><i class="pi pi-phone size-4 mr-1" />{{
+                          slotProps.option.addressPhone
+                        }}</span
+                      >
+                    </div>
+                    <span class="text-sm text-color"
+                      ><i class="pi pi-map-marker size-4 mr-1" />{{
+                        slotProps.option.address
+                      }}</span
+                    >
+                  </div>
+                </template>
+              </Select>
             </div>
           </template>
         </Card>
@@ -464,7 +487,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, nextTick, computed, watch } from 'vue'
 import {
   Card,
   Select,
@@ -519,7 +542,7 @@ const authstore = useAuthStore()
 const formRef = ref(null)
 const visible = ref(false)
 const senderAddresses = authstore.userAddress
-const senderAddr = ref(senderAddresses[0].address)
+const senderAddr = ref(senderAddresses[0])
 const provinces = ref([])
 const districts = ref([])
 const wards = ref([])
@@ -721,7 +744,7 @@ const onFormSubmit = async ($form) => {
     visible.value = true
     orderCreated.value = res.data.data
   } catch (error) {
-    toast.error('Lỗi khi tạo đơn hàng')
+    toast.error(error.response.data.message || 'Lỗi khi tạo đơn hàng')
     console.error(error)
   }
 }
@@ -736,6 +759,17 @@ const goToHome = () => {
 
 const stayOrderCreate = () => {
   visible.value = false
+}
+
+const onSenderAdressChange = ($form, event) => {
+  const selectedAddress = event.value
+  const addressObj = senderAddresses.find((addr) => addr.address === selectedAddress)
+
+  if (addressObj) {
+    senderAddr.value = addressObj
+    formRef.value.setFieldValue('SENDER_FULLNAME', addressObj.addressName)
+    formRef.value.setFieldValue('SENDER_PHONE', addressObj.addressPhone)
+  }
 }
 
 onMounted(() => {

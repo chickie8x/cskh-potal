@@ -2,26 +2,41 @@
   <div
     class="flex items-center gap-1 p-2 border-b border-surface-200 dark:border-surface-700 hover:bg-primary-50"
   >
-    <i class="pi pi-map-marker text-primary" />
-    <span class="text-sm block w-full">{{ address }}</span>
-    <div class="flex items-center justify-end gap-2">
-      <Button
-        v-tooltip.focus.top="'Đã sao chép'"
-        size="small"
-        icon="pi pi-clone"
-        variant="outlined"
-        rounded
-        severity="help"
-        @click="copyAddress"
-      />
-      <Button
-        size="small"
-        icon="pi pi-trash"
-        variant="outlined"
-        rounded
-        severity="danger"
-        @click="deleteAddress"
-      />
+    <div class="flex flex-col gap-2 w-full">
+      <div class="flex items-center gap-8">
+        <span class="text-color font-semibold text-sm">
+          <i class="pi pi-warehouse size-4" />
+          {{ addressName }}
+        </span>
+        <span class="text-sm text-gray-500"
+          ><i class="pi pi-phone size-4" /> {{ addressPhone }}</span
+        >
+      </div>
+      <div class="flex items-center justify-between gap-2 w-full">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-map-marker text-primary" />
+          <span class="text-sm block w-full">{{ address }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Button
+            v-tooltip.focus.top="'Đã sao chép'"
+            size="small"
+            icon="pi pi-clone"
+            variant="outlined"
+            rounded
+            severity="help"
+            @click="copyAddress"
+          />
+          <Button
+            size="small"
+            icon="pi pi-trash"
+            variant="outlined"
+            rounded
+            severity="danger"
+            @click="deleteAddress"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -42,6 +57,8 @@ const emits = defineEmits(['deleteAddress'])
 
 const address = ref(props.address.address)
 const addressId = ref(props.address.id)
+const addressName = ref(props.address.addressName)
+const addressPhone = ref(props.address.addressPhone)
 const copyAddress = () => {
   navigator.clipboard.writeText(address.value)
 }

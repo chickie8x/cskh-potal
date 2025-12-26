@@ -23,12 +23,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { Select } from 'primevue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 
 const code = ref('VIETTEL_POST')
@@ -37,13 +38,24 @@ const carrierOptions = [
   { label: 'Yunda Express', value: 'YUNDA_EXPRESS', path: '/order/yunda' },
 ]
 
+const updateCarrierFromRoute = () => {
+  const currentPath = route.path
+  const carrier = carrierOptions.find((option) =>
+    currentPath.includes(option.path.split('/').pop()),
+  )
+  if (carrier && carrier.value !== code.value) {
+    code.value = carrier.value
+  }
+}
+
 const onPartnerChange = () => {
   const path = carrierOptions.find((option) => option.value === code.value)
   router.push(path.path)
 }
 
 onMounted(() => {
-  const path = carrierOptions.find((option) => option.value === code.value)
-  router.push(path.path)
+  updateCarrierFromRoute()
 })
+
+watch(() => route.path, updateCarrierFromRoute)
 </script>

@@ -62,9 +62,7 @@
               size="small"
             />
             <div class="col-span-2">
-              <span class="text-sm text-color font-medium"
-                >{{ t('fileAttachedHints') }}</span
-              >
+              <span class="text-sm text-color font-medium">{{ t('fileAttachedHints') }}</span>
               <div class="mt-2 flex gap-2">
                 <input
                   ref="imgAttached"

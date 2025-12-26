@@ -19,6 +19,7 @@
     "@tailwindcss/vite": "^4.1.17",
     "@vueuse/core": "^14.0.0",
     "axios": "^1.7.3",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "pinia": "^3.0.4",

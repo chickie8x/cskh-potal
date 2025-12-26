@@ -57,7 +57,9 @@
           </template>
           <template #content>
             <div class="flex items-center text-sm">
-              <Message severity="error" icon="pi pi-ban" size="small">{{ t('errorHappened') }}</Message>
+              <Message severity="error" icon="pi pi-ban" size="small">{{
+                t('errorHappened')
+              }}</Message>
             </div>
           </template>
         </Card>
