@@ -1,1 +1,0 @@
-import{r as n,c as o,o as r}from"./index-C-7RJgkn.js";const t={__name:"index",setup(a){const e=n("Hello from Admin Tracking");return console.log(e.value),(c,s)=>(r(),o("div",null,"Admin Tracking"))}};export{t as default};

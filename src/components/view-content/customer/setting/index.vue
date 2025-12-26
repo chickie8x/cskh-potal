@@ -127,7 +127,7 @@
         <AddAddress @addressAdd="onAddressAdd" />
       </div>
       <div v-else>
-        <ConnectCarrier />
+        <ConnectCarrier @connect="onConnect" />
       </div>
     </Dialog>
   </div>
@@ -212,6 +212,11 @@ const connectCarrier = () => {
   open.value = true
   dialogComponent.value = 2
   headerText.value = 'Kết nối'
+}
+
+const onConnect = () => {
+  fetchConnectedCarrier()
+  open.value = false
 }
 
 onMounted(() => {

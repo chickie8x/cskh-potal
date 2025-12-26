@@ -60,7 +60,10 @@ import { Form } from '@primevue/forms'
 import { Select, InputText, InputIcon, IconField, FloatLabel, Button, Message } from 'primevue'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
+import api from '@/api/axios'
+import { toast } from 'vue-sonner'
 
+const emit = defineEmits(['connect'])
 const passwordVisible = ref(false)
 const carriers = ref([
   {
@@ -82,7 +85,18 @@ const resolver = ref(
   ),
 )
 
-const connect = ($form) => {
-  console.log($form)
+const connect = async ($form) => {
+  try {
+    const data = {
+      carrier: $form.values.carrier,
+      username: $form.values.email,
+      password: $form.values.password,
+    }
+    const response = await api.post('connector/viettelpost/customer-token/create', data)
+    emit('connect', response.data)
+  } catch (error) {
+    console.error(error)
+    toast.error(error.response.data.message || 'Lỗi kết nối')
+  }
 }
 </script>

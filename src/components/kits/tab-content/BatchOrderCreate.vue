@@ -57,15 +57,15 @@
                 <div class="flex items-center gap-8">
                   <span class="text-sm font-semibold text-color"
                     ><i class="pi pi-warehouse size-4 mr-1" />{{
-                      slotProps.option.addressName
+                      slotProps.option.addressName || ''
                     }}</span
                   >
                   <span class="text-sm font-semibold text-color"
-                    ><i class="pi pi-phone size-4 mr-1" />{{ slotProps.option.addressPhone }}</span
+                    ><i class="pi pi-phone size-4 mr-1" />{{ slotProps.option.addressPhone || '' }}</span
                   >
                 </div>
                 <span class="text-sm text-color"
-                  ><i class="pi pi-map-marker size-4 mr-1" />{{ slotProps.option.address }}</span
+                  ><i class="pi pi-map-marker size-4 mr-1" />{{ slotProps.option.address || '' }}</span
                 >
               </div>
             </template>
@@ -289,8 +289,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 const senderAddresses = ref(authStore.userAddress)
 const senderAddress = ref(senderAddresses.value[0])
-const senderName = computed(() => senderAddress.value.addressName)
-const senderPhone = computed(() => senderAddress.value.addressPhone)
+const senderName = computed(() => senderAddress.value?.addressName)
+const senderPhone = computed(() => senderAddress.value?.addressPhone)
 const orderServicesOptions = ref([])
 const orderServices = ref([])
 const orderState = ref([])

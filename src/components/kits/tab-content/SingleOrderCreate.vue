@@ -3,9 +3,9 @@
     ref="formRef"
     v-slot="$form"
     :initialValues="{
-      SENDER_FULLNAME: senderAddr.addressName,
-      SENDER_PHONE: senderAddr.addressPhone,
-      SENDER_ADDRESS: senderAddr.address,
+      SENDER_FULLNAME: senderAddr?.addressName,
+      SENDER_PHONE: senderAddr?.addressPhone,
+      SENDER_ADDRESS: senderAddr?.address,
       RECEIVER_FULLNAME: '',
       RECEIVER_PHONE: '',
       RECEIVER_PROVINCE: '',
@@ -64,18 +64,18 @@
                     <div class="flex items-center gap-8">
                       <span class="text-sm font-semibold text-color"
                         ><i class="pi pi-warehouse size-4 mr-1" />{{
-                          slotProps.option.addressName
+                          slotProps.option.addressName || ''
                         }}</span
                       >
                       <span class="text-sm font-semibold text-color"
                         ><i class="pi pi-phone size-4 mr-1" />{{
-                          slotProps.option.addressPhone
+                          slotProps.option.addressPhone || ''
                         }}</span
                       >
                     </div>
                     <span class="text-sm text-color"
                       ><i class="pi pi-map-marker size-4 mr-1" />{{
-                        slotProps.option.address
+                        slotProps.option.address || ''
                       }}</span
                     >
                   </div>
