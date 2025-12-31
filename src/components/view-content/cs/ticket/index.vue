@@ -529,6 +529,7 @@ const removeImage = (index) => {
 
 const updateTicketState = async () => {
   try {
+    updateLoading.value = true
     const formData = new FormData()
     formData.append('id', ticket.value.id)
     formData.append('status', newState.value)
@@ -544,10 +545,14 @@ const updateTicketState = async () => {
         'Content-Type': 'multipart/form-data',
       },
     })
-    console.log(res)
+    toast.success('Cập nhật ticket thành công')
   } catch (error) {
     console.log(error)
     toast.error(error.response.data.message || 'Loi khi update ticket')
+  }
+  finally{
+    updateLoading.value = false
+    visible.value = false
   }
 }
 
