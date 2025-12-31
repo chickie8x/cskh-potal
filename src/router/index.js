@@ -5,7 +5,7 @@ const routes = [
     path: '/',
     name: 'Home',
     component: () => import('../views/home/index.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: 'CUSTOMER' },
     children: [
       {
         path: 'dashboard',
@@ -51,7 +51,7 @@ const routes = [
     path: '/admin',
     name: 'Admin',
     component: () => import('../views/admin/index.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: 'ADMIN' },
     children: [
       {
         path: 'dashboard',
@@ -59,24 +59,33 @@ const routes = [
         component: () => import('../components/view-content/admin/dashboard/index.vue'),
       },
       {
-        path: 'order',
-        name: 'AdminOrder',
-        component: () => import('../components/view-content/admin/order/index.vue'),
+        path: 'logs',
+        name: 'AdminLog',
+        component: () => import('../components/view-content/admin/logs/index.vue'),
+      },
+      {
+        path: 'user',
+        name: 'AdminUser',
+        component: () => import('../components/view-content/admin/user/index.vue'),
+      },
+    ],
+  },
+
+  {
+    path: '/cs',
+    name: 'CS',
+    component: () => import('../views/cs/index.vue'),
+    meta: { requiresAuth: true, role: 'CS_STAFF' },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'CsDashboard',
+        component: () => import('../components/view-content/cs/dashboard/index.vue'),
       },
       {
         path: 'ticket',
-        name: 'AdminTicket',
-        component: () => import('../components/view-content/admin/ticket/index.vue'),
-      },
-      {
-        path: 'address',
-        name: 'AdminAddress',
-        component: () => import('../components/view-content/admin/address/index.vue'),
-      },
-      {
-        path: 'setting',
-        name: 'AdminSetting',
-        component: () => import('../components/view-content/admin/setting/index.vue'),
+        name: 'CsTicket',
+        component: () => import('../components/view-content/cs/ticket/index.vue'),
       },
     ],
   },
@@ -115,6 +124,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const accessToken = authStore.accessToken
+  const userRole = authStore.user?.role
+  const pathRole = to.meta.role
 
   // 1. Chưa login mà vào route cần login
   if (to.meta.requiresAuth && !accessToken) {
@@ -126,22 +137,30 @@ router.beforeEach((to, from, next) => {
 
   // 2. Đã login → không cho vào Login
   if (to.name === 'Login' && accessToken) {
+    if (userRole === 'ADMIN') {
+      return next({ name: 'AdminDashboard' })
+    }
+    if (userRole === 'CS_STAFF') {
+      return next({ name: 'CsDashboard' })
+    }
     return next({ name: 'Dashboard' })
   }
 
   if (to.path === '/') {
+    if (userRole === 'ADMIN') {
+      return next({ name: 'AdminDashboard' })
+    }
+    if (userRole === 'CS_STAFF') {
+      return next({ name: 'CsDashboard' })
+    }
     return next({ name: 'Dashboard' })
   }
 
   // 3. Kiểm tra quyền admin
-  if (to.fullPath.includes('/admin')) {
-    const role = authStore.user?.role
-    if (!role || role !== 'ADMIN') {
-      return next({ name: 'Forbidden' })
-    }
+  if (pathRole && userRole !== pathRole) {
+    return next({ name: 'Forbidden' })
   }
 
-  // 4. Cho phép đi tiếp
   return next()
 })
 

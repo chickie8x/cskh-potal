@@ -7,16 +7,15 @@ export const ticketCategories = [
 ]
 
 export const ticketPriorities = [
-  { label: 'LOW', value: 'LOW' },
-  { label: 'MEDIUM', value: 'MEDIUM' },
-  { label: 'HIGH', value: 'HIGH' },
+  { label: 'Thấp', value: 'LOW' },
+  { label: 'Trung bình', value: 'MEDIUM' },
+  { label: 'Cao', value: 'HIGH' },
 ]
 
 export const ticketStatus = [
-  { label: 'NEW', value: 'NEW' },
-  { label: 'ASSIGNED', value: 'ASSIGNED' },
-  { label: 'IN_PROGRESS', value: 'IN_PROGRESS' },
-  { label: 'CLOSED', value: 'CLOSED' },
+  { label: 'Mới tạo', value: 'NEW' },
+  { label: 'Đang xử lý', value: 'IN_PROGRESS' },
+  { label: 'Đã hoàn thành', value: 'CLOSED' },
 ]
 
 export const carriers = [{ label: 'Viettel Post', value: 'VIETTEL_POST' }]

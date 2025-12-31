@@ -3,9 +3,9 @@
     <Navbar />
     <div class="flex h-[calc(100vh-4rem)] overflow-auto">
       <div class="h-full bg-surface-0 dark:bg-surface-900">
-        <AdminSidebar />
+        <CsSidebar />
       </div>
-      <div class="flex-1 h-full bg-surface-50 dark:bg-surface-800">
+      <div class="flex-1 h-full bg-surface-50 dark:bg-surface-800 overflow-auto">
         <router-view />
       </div>
     </div>
@@ -14,5 +14,5 @@
 
 <script setup>
 import Navbar from '@/components/kits/navbar/index.vue'
-import AdminSidebar from '@/components/kits/admin-sitebar/index.vue'
+import CsSidebar from '@/components/kits/cs_sidebar/index.vue'
 </script>

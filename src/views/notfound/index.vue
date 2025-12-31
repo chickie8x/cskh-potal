@@ -13,10 +13,14 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
+import { useAuthStore } from '@/store/authstore'
+
+const authstore = useAuthStore()
+const role = authstore.user?.role
 
 const router = useRouter()
 
 const goHome = () => {
-  router.push({ name: 'Dashboard' })
+  router.push({ name: role === 'ADMIN' ? 'AdminDashboard' : 'Dashboard' })
 }
 </script>

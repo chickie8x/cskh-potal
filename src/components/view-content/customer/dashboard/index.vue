@@ -107,7 +107,12 @@
                 size="small"
                 :loading="printLoading"
               />
-              <Button :label="t('exportExcel')" icon="pi pi-download" size="small" @click="exportToExcel" />
+              <Button
+                :label="t('exportExcel')"
+                icon="pi pi-download"
+                size="small"
+                @click="exportToExcel"
+              />
             </div>
           </div>
         </template>
@@ -200,7 +205,9 @@
                   <span class="text-sm font-bold">{{ t('status') }}</span>
                 </template>
                 <template #body="slotProps">
-                  <span class="text-sm text-color">{{ orderStatusMapper[slotProps.data.carrier][slotProps.data.lastStatus] || '' }}</span>
+                  <span class="text-sm text-color">{{
+                    orderStatusMapper[slotProps.data.carrier][slotProps.data.lastStatus] || ''
+                  }}</span>
                 </template>
               </Column>
               <Column style="min-width: 150px">
@@ -466,7 +473,13 @@ import {
   Timeline,
   Checkbox,
 } from 'primevue'
-import { formatCurrency, formatDate, formatDateTime, preProcessData, exportExcel } from '@/utils/helpers'
+import {
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+  preProcessData,
+  exportExcel,
+} from '@/utils/helpers'
 import { toast } from 'vue-sonner'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -685,12 +698,12 @@ const onDeleteOrder = async (orderNumber) => {
 
 const exportToExcel = () => {
   if (!selectedOrders.value || selectedOrders.value.length === 0) {
-    toast.warning('Vui lòng chọn ít nhất một đơn hàng để xuất Excel');
-    return;
+    toast.warning('Vui lòng chọn ít nhất một đơn hàng để xuất Excel')
+    return
   }
-  const data = preProcessData(selectedOrders.value);
-  exportExcel(data);
-};
+  const data = preProcessData(selectedOrders.value)
+  exportExcel(data)
+}
 
 onMounted(() => {
   getOrders()

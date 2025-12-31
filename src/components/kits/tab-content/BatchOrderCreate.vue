@@ -61,11 +61,15 @@
                     }}</span
                   >
                   <span class="text-sm font-semibold text-color"
-                    ><i class="pi pi-phone size-4 mr-1" />{{ slotProps.option.addressPhone || '' }}</span
+                    ><i class="pi pi-phone size-4 mr-1" />{{
+                      slotProps.option.addressPhone || ''
+                    }}</span
                   >
                 </div>
                 <span class="text-sm text-color"
-                  ><i class="pi pi-map-marker size-4 mr-1" />{{ slotProps.option.address || '' }}</span
+                  ><i class="pi pi-map-marker size-4 mr-1" />{{
+                    slotProps.option.address || ''
+                  }}</span
                 >
               </div>
             </template>

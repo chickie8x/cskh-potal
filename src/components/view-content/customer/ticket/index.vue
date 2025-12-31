@@ -277,28 +277,34 @@
               </template>
             </Column>
             <template #expansion="slotProps">
-              <div class="p-4">
-                <div>
-                  <span class="font-bold text-sm">Hình ảnh đính kèm</span>
-                  <div class="flex items-center gap-4 mt-2">
+              <div class="p-4 flex flex-col gap-2">
+                <span class="font-semibold text-sm text-color">Ghi chú xử lý</span>
+                <div class="text-sm">{{ slotProps.data.responseNote || 'Không có ghi chú' }}</div>
+              </div>
+              <div class="p-4 flex">
+                <div class="flex flex-col gap-2 w-full border-r border-surface p-2">
+                  <span class="font-semibold text-sm text-color"
+                    >Đính kèm của người tạo ticket</span
+                  >
+                  <div class="flex items-center gap-2 mt-2">
                     <div v-for="item in slotProps.data.ticketAttachments" :key="item.id">
                       <div
-                        v-if="item.type === 'image'"
-                        class="w-40 h-40 overflow-hidden border border-surface"
+                        v-if="item.type === 'image' && item.role === 'CREATOR'"
+                        class="w-20 h-20 overflow-hidden border border-surface"
                       >
                         <Image :src="item.url" alt="" preview style="height: 100%; width: 100%" />
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="mt-8">
-                  <span class="font-bold text-sm">File đính kèm</span>
                   <div
                     v-for="item in slotProps.data.ticketAttachments"
                     :key="item.id"
                     class="flex flex-col gap-1"
                   >
-                    <div v-if="item.type === 'document'" class="flex items-center gap-1">
+                    <div
+                      v-if="item.type === 'document' && item.role === 'CREATOR'"
+                      class="flex items-center gap-1"
+                    >
                       <i class="pi pi-file-excel text-emerald-500" />
                       <a
                         :href="item.url"
@@ -306,6 +312,41 @@
                         class="text-blue-500 hover:underline text-sm"
                         >{{ item.name }}</a
                       >
+                    </div>
+                  </div>
+                </div>
+                <div class="w-full p-2">
+                  <span class="font-semibold text-sm text-color"
+                    >Đính kèm của người xử lý ticket</span
+                  >
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                      <div v-for="item in slotProps.data.ticketAttachments" :key="item.id">
+                        <div
+                          v-if="item.type === 'image' && item.role === 'HANDLER'"
+                          class="w-20 h-20 overflow-hidden border border-surface"
+                        >
+                          <Image :src="item.url" alt="" preview style="height: 100%; width: 100%" />
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      v-for="item in slotProps.data.ticketAttachments"
+                      :key="item.id"
+                      class="flex flex-col gap-1"
+                    >
+                      <div
+                        v-if="item.type === 'document' && item.role === 'HANDLER'"
+                        class="flex items-center gap-1"
+                      >
+                        <i class="pi pi-file-excel text-emerald-500" />
+                        <a
+                          :href="item.url"
+                          target="_blank"
+                          class="text-blue-500 hover:underline text-sm"
+                          >{{ item.name }}</a
+                        >
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -407,7 +448,6 @@ const onFormSubmit = async ($form) => {
     formData.append('files', file)
   })
 
-  console.log(formData)
   try {
     createLoading.value = true
     const response = await api.post('/customer/ticket/create', formData, {

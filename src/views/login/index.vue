@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { Form } from '@primevue/forms'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import Button from 'primevue/button'
@@ -84,6 +84,7 @@ import api from '@/api/axios'
 import { toast } from 'vue-sonner'
 import { useAuthStore } from '@/store/authstore'
 import { useRouter } from 'vue-router'
+import { jwtDecode } from 'jwt-decode'
 
 const authstore = useAuthStore()
 const passwordVisible = ref(false)
@@ -101,8 +102,16 @@ const login = async ($form) => {
     authstore.setAccessToken(res.data.data.token)
     authstore.setRefreshToken(res.data.data.refreshToken)
     authstore.setUserAddress(res.data.data.address)
-    router.push({ name: 'Dashboard' })
+    const user = jwtDecode(res.data.data.token)
+    if (user.role === 'ADMIN') {
+      router.push({ name: 'AdminDashboard' })
+    } else if (user.role === 'CS_STAFF') {
+      router.push({ name: 'CsDashboard' })
+    } else {
+      router.push({ name: 'Dashboard' })
+    }
   } catch (error) {
+    toast.error(error.response.data.message || 'Login failed')
     console.log(error)
   }
 }
