@@ -1,1 +1,0 @@
-import{r as a,c as o,a as r}from"./index-Sl951mL9.js";const t={__name:"index",setup(s){const e=a("Hello from Admin Dashboard");return console.log(e.value),(n,c)=>(r(),o("div",null,"Admin Dashboard"))}};export{t as default};

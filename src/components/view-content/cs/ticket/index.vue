@@ -546,6 +546,7 @@ const updateTicketState = async () => {
       },
     })
     toast.success('Cập nhật ticket thành công')
+    fetchTickets()
   } catch (error) {
     console.log(error)
     toast.error(error.response.data.message || 'Loi khi update ticket')
