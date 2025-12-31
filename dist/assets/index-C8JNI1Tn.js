@@ -1,0 +1,1 @@
+import{r as a,c as o,a as r}from"./index-iR2M7Nao.js";const t={__name:"index",setup(s){const e=a("Hello from Admin Dashboard");return console.log(e.value),(n,c)=>(r(),o("div",null,"Admin Dashboard"))}};export{t as default};
