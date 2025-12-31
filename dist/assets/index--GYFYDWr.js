@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{c,a as r}from"./index-B-nCTqG8.js";const o={};function n(t,a){return r(),c("div",null,"cs dashboard")}const d=e(o,[["render",n]]);export{d as default};

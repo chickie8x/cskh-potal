@@ -1,0 +1,1 @@
+import{r as o,c as s,a as n}from"./index-B-nCTqG8.js";const t={__name:"index",setup(a){const e=o("Hello from Admin Logs");return console.log(e.value),(r,c)=>(n(),s("div",null,"Admin Logs"))}};export{t as default};
