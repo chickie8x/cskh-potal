@@ -83,6 +83,11 @@ const routes = [
         component: () => import('../components/view-content/cs/dashboard/index.vue'),
       },
       {
+        path: 'order',
+        name: 'CsOrder',
+        component: () => import('../components/view-content/cs/order/index.vue'),
+      },
+      {
         path: 'ticket',
         name: 'CsTicket',
         component: () => import('../components/view-content/cs/ticket/index.vue'),

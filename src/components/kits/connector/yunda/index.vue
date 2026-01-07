@@ -41,7 +41,7 @@ const order = ref({
   appid: appKey,
   orderid: '92873592735',
   backparam: '散单测试',
-  backurl: 'https://www.google.com',
+  backurl: 'http://uoufh-14-170-142-245.a.free.pinggy.link/api/connector/yunda/webhook',
   freight: 10,
   items: [
     {
@@ -103,7 +103,10 @@ const createOrder = async () => {
     },
   })
   result.value = res.data
+  console.log('Response:', res.data)
 }
+
+createOrder()
 </script>
 
 <style scoped>

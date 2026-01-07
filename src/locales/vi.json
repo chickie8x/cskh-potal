@@ -4,6 +4,7 @@
   "filterByOrderNumber": "Lọc theo mã vận đơn",
   "filterByTime": "Lọc theo thời gian",
   "filterByCarrier": "Lọc theo đối tác",
+  "filterByCustomer": "Lọc theo khách hàng",
   "printAll": "In vận đơn",
   "showPostage": "Hiển thị cước phí",
   "printSize": "Kích thước in",
@@ -101,6 +102,7 @@
   "attachedment": "Đính kèm",
   "Cancel": "Hủy",
   "Save": "Lưu",
+  "creator": "Người tạo",
 
   "addressUtil": "Tiện ích địa chỉ",
   "addressUtilDesc": "Chuyển đổi và xác minh địa chỉ",

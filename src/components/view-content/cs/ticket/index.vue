@@ -550,8 +550,7 @@ const updateTicketState = async () => {
   } catch (error) {
     console.log(error)
     toast.error(error.response.data.message || 'Loi khi update ticket')
-  }
-  finally{
+  } finally {
     updateLoading.value = false
     visible.value = false
   }

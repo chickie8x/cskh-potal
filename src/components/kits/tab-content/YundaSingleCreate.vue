@@ -1,6 +1,24 @@
 <template>
   <div>
-    <Form v-slot="$form">
+    <Form
+      v-slot="$form"
+      :initialValues="{
+        senderName: '',
+        senderPhone: '',
+        senderAddr: '',
+        senderProvince: '',
+        senderCity: '',
+        senderCounty: '',
+        receiverName: '',
+        receiverPhone: '',
+        receiverAddr: '',
+        receiverProvince: '',
+        receiverCity: '',
+        receiverCounty: '',
+        specialType: '',
+        weight: null,
+      }"
+    >
       <div class="flex flex-col gap-8">
         <Card>
           <template #title>
@@ -32,7 +50,7 @@
               <IconField>
                 <InputIcon class="pi pi-map-marker" />
                 <InputText
-                  name="senderAddress"
+                  name="senderAddr"
                   :placeholder="t('senderAddress')"
                   class="w-full"
                   size="small"
@@ -44,23 +62,22 @@
                 optionLabel="name"
                 :placeholder="t('province')"
                 size="small"
-                @change="onProvinceChange"
+                @change="onSenderProvinceChange"
               />
               <Select
-                name="senderProvince"
+                name="senderCity"
                 :options="senderCityList"
                 optionLabel="name"
                 :placeholder="t('city')"
                 size="small"
-                @change="onProvinceChange"
+                @change="onSenderCityChange"
               />
               <Select
-                name="senderDistrict"
+                name="senderCounty"
                 :options="senderCountyList"
                 optionLabel="name"
                 :placeholder="t('district')"
                 size="small"
-                @change="onProvinceChange"
               />
             </div>
           </template>
@@ -77,7 +94,7 @@
               <IconField>
                 <InputIcon class="pi pi-user" />
                 <InputText
-                  name="senderName"
+                  name="receiverName"
                   :placeholder="t('senderName')"
                   class="w-full"
                   size="small"
@@ -86,8 +103,8 @@
               <IconField>
                 <InputIcon class="pi pi-phone" />
                 <InputText
-                  name="senderPhone"
-                  :placeholder="t('senderPhone')"
+                  name="receiverPhone"
+                  :placeholder="t('receiverPhone')"
                   class="w-full"
                   size="small"
                 />
@@ -95,35 +112,34 @@
               <IconField>
                 <InputIcon class="pi pi-map-marker" />
                 <InputText
-                  name="senderAddress"
+                  name="receiverAddr"
                   :placeholder="t('senderAddress')"
                   class="w-full"
                   size="small"
                 />
               </IconField>
               <Select
-                name="senderProvince"
+                name="receiverProvince"
                 :options="provinceList"
                 optionLabel="name"
                 :placeholder="t('province')"
                 size="small"
-                @change="onProvinceChange"
+                @change="onReceiverProvinceChange"
               />
               <Select
-                name="senderProvince"
-                :options="senderCityList"
+                name="receiverCity"
+                :options="receiverCityList"
                 optionLabel="name"
                 :placeholder="t('city')"
                 size="small"
-                @change="onProvinceChange"
+                @change="onReceiverCityChange"
               />
               <Select
-                name="senderDistrict"
-                :options="senderCountyList"
+                name="receiverCounty"
+                :options="receiverCountyList"
                 optionLabel="name"
                 :placeholder="t('district')"
                 size="small"
-                @change="onProvinceChange"
               />
             </div>
             <div class="mt-8 border-t border-surface-200 py-4">
@@ -142,10 +158,10 @@
                   size="small"
                 />
                 <div class="flex items-center gap-1">
-                  <label class="text-sm text-color block min-w-18" for="weight">{{
-                    t('weight')
-                  }}</label>
-                  <InputNumber name="weight" size="small" fluid :format="false" />
+                  <FloatLabel variant="on">
+                    <InputNumber name="weight" size="small" fluid :format="false" />
+                    <label for="weight">{{ t('weight') }}</label>
+                  </FloatLabel>
                 </div>
               </div>
             </div>
@@ -158,7 +174,7 @@
 
 <script setup>
 import { province, specialType } from '@/utils/const'
-import { IconField, InputIcon, InputText, InputNumber, Select, Card } from 'primevue'
+import { IconField, InputIcon, InputText, InputNumber, Select, Card, FloatLabel } from 'primevue'
 import { Form } from '@primevue/forms'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -172,7 +188,20 @@ const senderCountyList = ref([])
 const receiverCityList = ref([])
 const receiverCountyList = ref([])
 
-const onProvinceChange = (event) => {
-  console.log(event)
+const onSenderProvinceChange = (event) => {
+  senderCityList.value = provinceList.value.find((item) => item.id === event.value.id).son
+  console.log(senderCityList.value)
+}
+
+const onSenderCityChange = (event) => {
+  senderCountyList.value = senderCityList.value.find((item) => item.id === event.value.id).sec
+}
+
+const onReceiverProvinceChange = (event) => {
+  receiverCityList.value = provinceList.value.find((item) => item.id === event.value.id).son
+}
+
+const onReceiverCityChange = (event) => {
+  receiverCountyList.value = receiverCityList.value.find((item) => item.id === event.value.id).sec
 }
 </script>

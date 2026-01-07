@@ -52,6 +52,7 @@ const active = ref('Dashboard')
 
 const menuItems = [
   { label: 'Dashboard', icon: 'pi pi-home', path: '/cs/dashboard' },
+  { label: 'Order', icon: 'pi pi-box', path: '/cs/order' },
   { label: 'Ticket', icon: 'pi pi-ticket', path: '/cs/ticket' },
 ]
 

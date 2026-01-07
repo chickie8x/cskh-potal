@@ -246,7 +246,7 @@
             <Column field="priority" :header="t('ticketPriority')">
               <template #body="slotProps">
                 <Tag
-                  :value="slotProps.data.priority"
+                  :value="t(slotProps.data.priority)"
                   :severity="priorityMap[slotProps.data.priority]"
                   style="font-size: 12px"
                 />
@@ -255,7 +255,7 @@
             <Column field="status" :header="t('ticketStatus')" class="text-sm">
               <template #body="slotProps">
                 <Tag
-                  :value="slotProps.data.status"
+                  :value="t(slotProps.data.status)"
                   :severity="statusMap[slotProps.data.status]"
                   style="font-size: 12px"
                 />
