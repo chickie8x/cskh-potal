@@ -25,7 +25,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+import api from '@/api/axios'
 import { MD5 } from 'crypto-js'
 import { useI18n } from 'vue-i18n'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primevue'
@@ -34,14 +34,13 @@ import YundaBatchCreate from '@/components/kits/tab-content/YundaBatchCreate.vue
 
 const { t } = useI18n()
 
-const appKey = '999999'
-const appSecret = '04d4ad40eeec11e9bad2d962f53dda9d'
-const url = 'https://u-openapi.yundasys.com/openapi-api/v1/order/pushOrder'
+// const appKey = '999999'
+// const appSecret = '04d4ad40eeec11e9bad2d962f53dda9d'
+const url = '/connector/yunda/create-order'
 const order = ref({
-  appid: appKey,
   orderid: '92873592735',
-  backparam: '散单测试',
-  backurl: 'http://uoufh-14-170-142-245.a.free.pinggy.link/api/connector/yunda/webhook',
+  backparam: 'id cua order',
+  backurl: 'http://imnal-14-247-158-0.a.free.pinggy.link/api/connector/yunda/webhook',
   freight: 10,
   items: [
     {
@@ -86,22 +85,15 @@ const order = ref({
 const result = ref({})
 
 const createOrder = async () => {
-  const requestBody = JSON.stringify(order.value)
-  const signString = `${requestBody}_${appSecret}`
-  const sign = MD5(signString).toString()
+  // const requestBody = JSON.stringify(order.value)
+  // const signString = `${requestBody}_${appSecret}`
+  // const sign = MD5(signString).toString()
 
-  console.log('Request Body:', requestBody)
-  console.log('Sign String:', signString)
-  console.log('Generated Sign:', sign)
+  // console.log('Request Body:', requestBody)
+  // console.log('Sign String:', signString)
+  // console.log('Generated Sign:', sign)
 
-  const res = await axios.post(url, requestBody, {
-    headers: {
-      'Content-Type': 'application/json',
-      'app-key': appKey,
-      sign: sign,
-      'req-time': new Date().getTime(),
-    },
-  })
+  const res = await api.post(url, {order: order.value})
   result.value = res.data
   console.log('Response:', res.data)
 }

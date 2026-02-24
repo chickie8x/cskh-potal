@@ -72,3 +72,4 @@ export const exportExcel = (data) => {
   link.click()
   document.body.removeChild(link)
 }
+
